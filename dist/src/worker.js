@@ -1,4 +1,4 @@
-import Packer from "./packer.js";
+import Packer from "./packer";
 
 onmessage = function (msg) {
     const start = this.performance.now();
