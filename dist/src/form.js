@@ -1,9 +1,9 @@
 import { scale_meter_px, scene } from "./configurations";
 import Container from "./container";
-import Pack from "./pack";
-import Packer from "./packer";
-import { updateScene } from '../main';
-import { loadPacks, loadResult } from "./result_drawer";
+import Pack from "./pack.js";
+import Packer from "./packer.js";
+import { updateScene } from '../main.js';
+import { loadPacks, loadResult } from "./result_drawer.js";
 
 $(document).ready(function () {
 
