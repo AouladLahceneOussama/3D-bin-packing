@@ -1,6 +1,5 @@
-import { scale_meter_px } from "./configurations";
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
-import { scene } from "./configurations";
+import { scale_meter_px, scene } from "./configurations.js";
 
 let Id = 0;
 

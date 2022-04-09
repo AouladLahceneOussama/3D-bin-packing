@@ -1,7 +1,7 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
-import { scale_meter_px, scene } from './configurations';
-import { ThreeDContainer } from './ThreeD_container';
-import { camera } from '../main';
+import { scale_meter_px, scene } from './configurations.js';
+import { ThreeDContainer } from './ThreeD_container.js';
+import { camera } from '../main.js';
 
 import Pack from './pack';
 

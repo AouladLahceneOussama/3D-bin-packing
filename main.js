@@ -109,11 +109,11 @@ function render() {
 function loadFloor() {
   // TEXTURES
   const textureLoader = new THREE.TextureLoader();
-  const groundBaseColor = textureLoader.load("textures/ground/Concrete_019_basecolor.jpg");
-  const groundNormalMap = textureLoader.load("textures/ground/Concrete_019_normal.jpg");
-  const groundHeightMap = textureLoader.load("textures/ground/Concrete_019_height.png");
-  const groundRoughnessMap = textureLoader.load("textures/ground/Concrete_019_roughness.jpg");
-  const groundAmbientOcclusion = textureLoader.load("textures/ground/Concrete_019_ambientOcclusion.jpg");
+  const groundBaseColor = textureLoader.load('textures/ground/Concrete_019_BaseColor.jpg');
+  const groundNormalMap = textureLoader.load('textures/ground/Concrete_019_Normal.jpg');
+  const groundHeightMap = textureLoader.load('textures/ground/Concrete_019_Height.png');
+  const groundRoughnessMap = textureLoader.load('textures/ground/Concrete_019_Roughness.jpg');
+  const groundAmbientOcclusion = textureLoader.load('textures/ground/Concrete_019_AmbientOcclusion.jpg');
 
   const WIDTH = 1800
   const LENGTH = 1800

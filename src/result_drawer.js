@@ -1,6 +1,6 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
-import { scene } from "./configurations";
-import Pack from './pack';
+import { scene } from "./configurations.js";
+import Pack from './pack.js';
 
 //load the packages in the certain position with certain rotaion into the scene
 function loadPacks(openPoints, packagesLoaded) {
