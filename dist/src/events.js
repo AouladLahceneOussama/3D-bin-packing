@@ -3,7 +3,7 @@ import { scale_meter_px, scene } from './configurations.js';
 import { ThreeDContainer } from './ThreeD_container.js';
 import { camera } from '../main.js';
 
-import Pack from './pack.js';
+import Pack from './pack';
 
 const rayCaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();

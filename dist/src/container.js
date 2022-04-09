@@ -1,6 +1,5 @@
-import { scale_meter_px } from "./configurations";
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
-import { scene } from "./configurations.js";
+import { scale_meter_px, scene } from "./configurations.js";
 import { truck_wheels, truck_support } from "../main.js";
 
 class Container {

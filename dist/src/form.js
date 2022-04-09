@@ -1,5 +1,5 @@
-import { scale_meter_px, scene } from "./configurations";
-import Container from "./container";
+import { scale_meter_px, scene } from "./configurations.js";
+import Container from "./container.js";
 import Pack from "./pack.js";
 import Packer from "./packer.js";
 import { updateScene } from '../main.js';
