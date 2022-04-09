@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/3D-bin-packing/assets/favicon.17e50649.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <title>3D Bin Packaging</title>
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.e3108209.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.e730c978.css">
+</head>
+
+<body>
+  <div id="app">
+
+    <!-- menu open icon -->
+    <div class="menuIcon openMenuIcon">
+      <i class="fa-solid fa-bars "></i>
+    </div>
+    <!-- menu open icon -->
+
+    <!-- main menu -->
+    <div class="menu closeMenu">
+
+      <div class="reset">
+        <i class="fa-solid fa-recycle" id="reset"></i>
+      </div>
+
+      <div class="closeMenuIcon">
+        <i class="fa-solid fa-times"></i>
+      </div>
+
+      <h1>Packer <br> Controller</h1>
+      <hr>
+
+      <h3>
+        Scale
+        <span class="scale">
+          1m
+          <i class="fa-solid fa-arrow-right-long"></i>
+          100px
+        </span>
+      </h3>
+
+      <div class="sectionTitle">
+        Load data
+        <div class="line"></div>
+      </div>
+
+      <div class="csv">
+        <div class="formContainer ">
+          <h3 class="packAdd">
+            <span>csv</span>
+            <i class="fa-solid fa-circle-plus" id="openCSV"></i>
+          </h3>
+
+          <div class="formContainerContentClose" id="csv">
+            <p>Please follow the structure of this sample</p>
+            <a href="csv-files/csv-example.csv">csv sample</a>
+            <div class="upload">
+              <p>Upload your file</p>
+
+              <!-- actual upload which is hidden -->
+              <input type="file" id="actual-btn" hidden />
+
+              <!-- our custom upload button -->
+              <label for="actual-btn">Choose File</label>
+
+              <!-- name of file chosen -->
+              <span id="file-chosen">No file chosen</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="api">
+        <div class="formContainer ">
+          <h3 class="packAdd">
+            <span>Api</span>
+            <i class="fa-solid fa-circle-plus" id="openApi"></i>
+          </h3>
+
+          <div class="formContainerContentClose" id="api">
+            <p>Please insert the url of the api</p>
+            <div class="upload">
+              <p class="inputLabel">API URL</p>
+
+              <input type="text" class="input" id="apiUrl" />
+              <button id="loadApi">load</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="localstorage">
+        <div class="formContainer ">
+          <h3 class="packAdd">
+            <span>Local storage (default)</span>
+            <i class="fa-solid fa-circle-plus" id="openLocalStorage"></i>
+          </h3>
+
+          <div class="formContainerContentClose" id="localstorage">
+            <div class="upload">
+              <p>If you have data in your localstorage </p>
+              <button>load</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="sectionTitle">
+        Add data manually
+        <div class="line"></div>
+
+      </div>
+
+      <div class="formContainer ">
+        <h3 class="packAdd">
+          <span>Vehicule</span>
+          <i class="fa-solid fa-circle-plus" id="openVehicule"></i>
+        </h3>
+
+        <div class="formContainerContentClose" id="vehicule">
+          <div class="packInfo">
+            <div>
+              Dimensions
+            </div>
+            <div class="packInfo-numbers" id="containerDetails"></div>
+          </div>
+          <form class="packageForm" id="containerForm">
+            <p class="inputLabel">Width</p>
+            <input type="number" min="0" max="16" step="0.01" id="containerWidth" class="input" required>
+            <p class="inputLabel">Height </p>
+            <input type="number" min="0" max="4" step="0.01" id="containerHeight" class="input" required>
+            <p class="inputLabel">Lenght </p>
+            <input type="number" min="0" max="3" step="0.01" id="containerLenght" class="input" required>
+            <p class="inputLabel">Capacity </p>
+            <input type="number" min="0" value="0" step="0.01" id="containerCapacity" class="input" required>
+
+            <button class="btn">Add / Update</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="formContainer">
+        <h3 class="packAdd">
+          <span>Colis</span>
+          <i class="fa-solid fa-circle-plus" id="openPackages"></i>
+        </h3>
+        <div class="formContainerContentClose" id="packages">
+          <div id="packageDetails">
+          </div>
+
+          <form class="packageForm" id="packForm">
+            <div class="randomPack">
+              <p>colis data</p>
+              <button type="button" id="random">Random</button>
+            </div>
+            <p class="inputLabel">Label</p>
+            <input type="text" id="packLabel" class="input">
+            <div class="inputs">
+              <div>
+                <p class="inputLabel">Width</p>
+                <input type="number" min="0" max="5" step="0.01" id="packWidth" class="input" required>
+              </div>
+              <div>
+                <p class="inputLabel">Height </p>
+                <input type="number" min="0" max="4" step="0.01" id="packHeight" class="input" required>
+              </div>
+              <div>
+                <p class="inputLabel">Lenght </p>
+                <input type="number" min="0" max="3" step="0.01" id="packLenght" class="input" required>
+              </div>
+            </div>
+            <div class="inputs">
+              <div>
+                <p class="inputLabel">Quantity </p>
+                <input type="number" min="0" id="packQuantity" class="input" required>
+              </div>
+              <div>
+                <p class="inputLabel">StackingCapacity </p>
+                <input type="number" min="-1" id="packStackingCapacity" class="input" value="-1" required>
+              </div>
+              <div>
+                <p class="inputLabel">Priority </p>
+                <input type="number" min="1" value="0" id="packPriority" class="input" required>
+              </div>
+            </div>
+
+
+            <p class="inputLabel">Rotation </p>
+            <div>
+              <div>
+                <input type="checkbox" id="base" role="base" required checked>
+                <label for="base">Base</label>
+              </div>
+
+              <div>
+                <input type="checkbox" id="rightSide">
+                <label for="rightSide">Right side</label>
+              </div>
+
+              <div>
+                <input type="checkbox" id="frontSide">
+                <label for="frontSide">Front side</label>
+              </div>
+            </div>
+
+            <button class="btn">Add</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="sectionTitle">
+        Solving result
+        <div class="line"></div>
+
+      </div>
+      <div class="formContainer">
+        <h3 class="packAdd">
+          <span>Result</span>
+          <i class="fa-solid fa-circle-plus" id="openResult"></i>
+        </h3>
+        <div class="formContainerContentClose" id="result">
+        </div>
+      </div>
+
+      <button class="solveBtn" type="button" id="solve">Solve</button>
+    </div>
+    <!-- main menu -->
+
+    <div class="threeD-container" id="3D-container">
+
+      <!-- camera controller -->
+      <div class="cameraController">
+        <div class="cube">
+          <div class="cube__face cube__face--front" role="front"></div>
+          <div class="cube__face cube__face--back"></div>
+          <div class="cube__face cube__face--right"></div>
+          <div class="cube__face cube__face--left" role="left"></div>
+          <div class="cube__face cube__face--top" role="top"></div>
+          <div class="cube__face cube__face--bottom"></div>
+        </div>
+      </div>
+      <!-- camera controller -->
+
+      <!-- packdetails -->
+      <form class="pack-detail pack-detail-close" id="packDetail">
+
+        <div class="pack-detail-up">
+          <p>Colis Detail <span id="packStatut"></span></p>
+          <i class="fa-solid fa-circle-plus" id="openPackDetail"></i>
+        </div>
+
+        <div class="pack-detail-content">
+
+          <div>
+            <input type="hidden" id="pack_Detail_Id">
+            <p class="inputLabel">Label</p>
+            <input type="text" id="pack_Detail_Label" class="input">
+          </div>
+
+          <div class="inputs">
+            <div>
+              <p class="inputLabel">Width</p>
+              <input type="number" min="0" max="5" step="0.01" id="pack_Detail_Width" class="input" required>
+            </div>
+            <div>
+              <p class="inputLabel">Height </p>
+              <input type="number" min="0" max="4" step="0.01" id="pack_Detail_Height" class="input" required>
+            </div>
+            <div>
+              <p class="inputLabel">Lenght </p>
+              <input type="number" min="0" max="3" step="0.01" id="pack_Detail_Lenght" class="input" required>
+            </div>
+          </div>
+
+          <div class="inputs">
+            <div>
+              <p class="inputLabel">Quantity </p>
+              <input type="number" min="0" id="pack_Detail_Quantity" class="input" required>
+            </div>
+            <div>
+              <p class="inputLabel">StackingCapacity </p>
+              <input type="number" min="-1" id="pack_Detail_StackingCapacity" class="input" required>
+            </div>
+            <div>
+              <p class="inputLabel">Priority </p>
+              <input type="number" min="0" value="0" id="pack_Detail_Priority" class="input" required>
+            </div>
+          </div>
+
+          <p class="inputLabel">Rotation </p>
+
+          <div>
+            <div>
+              <input type="checkbox" id="pack_Detail_base">
+              <span class="checkmark"></span>
+              <label for="pack_Detail_base">Base</label>
+            </div>
+
+            <div>
+              <input type="checkbox" id="pack_Detail_right-side">
+              <label for="pack_Detail_right-side">Right side</label>
+            </div>
+
+            <div>
+              <input type="checkbox" id="pack_Detail_front-side">
+              <label for="pack_Detail_front-side">Front side</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="pack-detail-down">
+          <button class="btn-update" id="updatePack">Update</button>
+          <button class="btn-delete" id="deletePack">Delete</button>
+        </div>
+
+      </form>
+      <!-- packdetails -->
+
+      <!-- number of boxes controller -->
+      <div class="range">
+        <input type="range" min="1" max="" value="0" id="numberBox">
+      </div>
+      <!-- number of boxes controller -->
+
+      <!-- loader -->
+      <!-- <div class="loader">
+        <div class="box box0">
+          <div></div>
+        </div>
+        <div class="box box1">
+          <div></div>
+        </div>
+        <div class="box box2">
+          <div></div>
+        </div>
+        <div class="box box3">
+          <div></div>
+        </div>
+        <div class="box box4">
+          <div></div>
+        </div>
+        <div class="box box5">
+          <div></div>
+        </div>
+        <div class="box box6">
+          <div></div>
+        </div>
+        <div class="box box7">
+          <div></div>
+        </div>
+        <div class="ground">
+          <div></div>
+        </div>
+      </div> -->
+      <!-- loader -->
+
+    </div>
+
+  </div>
+
+  <!-- GSAP Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" ></script>
+  <!-- GSAP Library -->
+
+  <!-- JQuery Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- JQuery Library -->
+
+  <!-- MyScripts -->
+  
+  
+  <!-- MyScripts -->
+
+</body>
+
+</html>
