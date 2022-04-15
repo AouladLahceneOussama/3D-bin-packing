@@ -271,7 +271,6 @@ class Packer {
         for (let i = 0; i < this.openPoints.length; i++) {
             let point = this.openPoints[i];
             let newPack = { ...pack }
-            // console.log(point)
 
             if (point.y > 0 && point.type == "T" && pack.stackC != -1 && !this.canBeStacked(pack, point)) continue;
 
@@ -489,7 +488,7 @@ class Packer {
     //get the indexes of the packs that meet certain condition
     getIndexes(packGroup) {
         let pointAndIndex = [];
-        console.log(packGroup)
+
         this.openPoints.map((p, index) => {
             if (parseInt(p.type != undefined && p.type == "T" && p.pointOwner.split("-")[0]) == packGroup.parent_id) {
                 pointAndIndex.push({
@@ -508,7 +507,6 @@ class Packer {
         let pointAndIndex = this.getIndexes(packGroup);
         let remove = [];
 
-        console.log(pointAndIndex)
         if (pointAndIndex.length >= 2) {
 
             for (let i = 0; i < pointAndIndex.length; i++) {
@@ -661,14 +659,15 @@ class Packer {
             return point.y == pack.y
                 && point.x < pack.x + pack.w
                 && point.pointOwner != pack.id
-                && point.type != "S";
+                && point.type != "S"
+                && !point.ignored;
         });
 
         sidePoint.sort((a, b) => {
             return a.z - b.z;
         });
 
-        // console.log(pack, sidePoint);
+        console.log(pack, sidePoint);
 
         var index = null;
         if (sidePoint.length > 0) {
@@ -701,17 +700,35 @@ class Packer {
                                 && pack.z + pack.l >= tmpSidePoint.z + 1;
                         }
                     });
-                    
-                    if (pack.y == 0)
-                        sideOpenPoint.push(tmpSidePoint);
-                    else {
-                        if (check.length > 0)
+
+                    if (pack.y == 0) {
+                        let isPointInPack = this.packagesLoaded.filter(p => {
+                            return p.x <= tmpSidePoint.x
+                                && p.x + p.w >= tmpSidePoint.x
+                                && p.z <= tmpSidePoint.z
+                                && p.z + p.l >= tmpSidePoint.z;
+                        });
+
+                        if (tmpSidePoint.z == 0 || isPointInPack.length != 0){
                             sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == sidePoint[0].x && p.y == pack.y && p.z == sidePoint[0].z;
+                            });
+                        }
+                            
+                    }
+                    else {
+                        if (check.length > 0){
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == sidePoint[0].x && p.y == pack.y && p.z == sidePoint[0].z;
+                            });
+                        }
                     }
 
-                    index = this.openPoints.findIndex(p => {
-                        return p.x == sidePoint[0].x && p.y == pack.y && p.z == sidePoint[0].z;
-                    });
+                    
                 }
             }
 
@@ -719,39 +736,67 @@ class Packer {
                 let p1 = pack.openPoint.F;
                 let p2 = sidePoint[0];
 
-                // console.log(p1, p2)
                 let isTherePack = this.packagesLoaded.filter(p => {
-                    // console.log(p, p1, p2)
                     return p.x >= p2.x && p.x <= p1.x && p.z + 1 > p1.z && p.z + 1 <= p2.z && p.y == p1.y;
                 });
 
                 // console.log(isTherePack);
                 if (isTherePack.length == 0) {
-
-                    sideOpenPoint.push({
+                    let tmpSidePoint = {
                         pointOwner: pack.id,
                         x: sidePoint[0].x,
                         y: pack.y,
                         z: pack.z + pack.l,
                         type: "S",
                         ignored: false
+                    };
+
+                    let check = this.packagesLoaded.filter(pack => {
+                        if (tmpSidePoint.y > 0) {
+                            return pack.y + pack.h == tmpSidePoint.y
+                                && pack.x <= tmpSidePoint.x + 1
+                                && pack.x + pack.w >= tmpSidePoint.x + 1
+                                && pack.z <= tmpSidePoint.z + 1
+                                && pack.z + pack.l >= tmpSidePoint.z + 1;
+                        }
                     });
 
-                    index = this.openPoints.findIndex(p => {
-                        return p.x == pack.x && p.y == pack.y && p.z == pack.z + pack.l;
-                    });
+                    if (pack.y == 0) {
+                        let isPointInPack = this.packagesLoaded.filter(p => {
+                            return p.x <= tmpSidePoint.x
+                                && p.x + p.w >= tmpSidePoint.x
+                                && p.z <= tmpSidePoint.z
+                                && p.z + p.l >= tmpSidePoint.z;
+                        });
+
+                        if (tmpSidePoint.z == 0 || isPointInPack.length != 0) {
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == pack.x && p.y == pack.y && p.z == pack.z + pack.l;
+                            });
+                        }
+                    }
+
+                    else {
+                        if (check.length > 0) {
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == pack.x && p.y == pack.y && p.z == pack.z + pack.l;
+                            });
+                        }
+                    }
+
+
                 }
             }
 
             if (index != -1 && index != null) {
-                // console.log(index)
-                // console.log(this.openPoints[index])
                 this.openPoints[index].ignored = true;
             }
         }
 
-        // console.log(sidePoint);
-        // console.log(sideOpenPoint);
         return sideOpenPoint;
     }
     //create the open point ???????????????????? this function need to be traited

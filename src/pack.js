@@ -1,5 +1,6 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
 import { scale_meter_px, scene } from "./configurations.js";
+import Logger from './logger.js';
 
 let Id = 0;
 
@@ -161,7 +162,9 @@ class Pack {
         packages.push(this.getPackToLocalStorage)
         localStorage.setItem("packages", JSON.stringify(packages));
 
-        Pack.loadPacks()
+        Pack.loadPacks();
+        let logger = new Logger("Adding Pack", 0.01);
+        logger.dispatchMessage();
     }
 
     static updatePackLocalstorage() {
@@ -297,6 +300,8 @@ class Pack {
             $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
         });
 
+        let logger = new Logger("Updating Pack", 0.01);
+        logger.dispatchMessage();
     }
 
     //remove the pack
@@ -311,6 +316,9 @@ class Pack {
             var packDim = pack.w / scale_meter_px + " , " + pack.h / scale_meter_px + " , " + pack.l / scale_meter_px + " ( " + pack.q + " ) ";
             $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
         });
+
+        let logger = new Logger("Remove Pack", 0.01);
+        logger.dispatchMessage();
     }
 
     //load the packs created
