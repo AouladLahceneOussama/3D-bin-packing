@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.e3108209.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.e730c978.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.c3c624f4.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.475cc276.css">
 </head>
 
 <body>
@@ -50,7 +50,7 @@
         <div class="line"></div>
       </div>
 
-      <div class="csv">
+      <!-- <div class="csv">
         <div class="formContainer ">
           <h3 class="packAdd">
             <span>csv</span>
@@ -62,21 +62,15 @@
             <a href="csv-files/csv-example.csv">csv sample</a>
             <div class="upload">
               <p>Upload your file</p>
-
-              <!-- actual upload which is hidden -->
               <input type="file" id="actual-btn" hidden />
-
-              <!-- our custom upload button -->
               <label for="actual-btn">Choose File</label>
-
-              <!-- name of file chosen -->
               <span id="file-chosen">No file chosen</span>
             </div>
 
           </div>
         </div>
 
-      </div>
+      </div> -->
 
       <div class="api">
         <div class="formContainer ">
@@ -97,7 +91,7 @@
         </div>
       </div>
 
-      <div class="localstorage">
+      <!-- <div class="localstorage">
         <div class="formContainer ">
           <h3 class="packAdd">
             <span>Local storage (default)</span>
@@ -112,7 +106,7 @@
 
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="sectionTitle">
         Add data manually
@@ -189,7 +183,7 @@
               </div>
               <div>
                 <p class="inputLabel">Priority </p>
-                <input type="number" min="1" value="0" id="packPriority" class="input" required>
+                <input type="number" min="0" value="0" id="packPriority" class="input" required>
               </div>
             </div>
 
@@ -331,6 +325,52 @@
       </div>
       <!-- number of boxes controller -->
 
+      <div class="logger">
+        <div class="sectionTitle">
+          Logs
+          <div class="line"></div>
+        </div>
+        <div id="logMsg">
+
+          <!-- <div class="logDetail">
+            <h2>Solving</h2>
+            <div class="logTime">
+              <p>
+                15-04-2022 - 10:07
+              </p>
+              <p>
+                Execution Time : 3s
+              </p>
+            </div>
+          </div>
+
+          <div class="logDetail">
+            <h2>Solving</h2>
+            <div class="logTime">
+              <p>
+                15-04-2022 - 10:07
+              </p>
+              <p>
+                Execution Time : 3s
+              </p>
+            </div>
+          </div>
+
+          <div class="logDetail">
+            <h2>Solving</h2>
+            <div class="logTime">
+              <p>
+                15-04-2022 - 10:07
+              </p>
+              <p>
+                Execution Time : 3s
+              </p>
+            </div>
+          </div> -->
+
+        </div>
+      </div>
+
       <!-- loader -->
       <!-- <div class="loader">
         <div class="box box0">
@@ -368,7 +408,7 @@
   </div>
 
   <!-- GSAP Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" ></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
   <!-- GSAP Library -->
 
   <!-- JQuery Library -->
