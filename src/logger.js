@@ -31,7 +31,6 @@ class Logger {
 
     //add the message to the logger (UI)
     dispatchMessage() {
-        console.log("dispatch message")
         let logTime = "<div class='logTime'><p>" + this.dateTime() + "</p><p>Execution Time : "
                       + this.executionTime.toFixed(2) + "s</p></div>";
 

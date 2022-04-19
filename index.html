@@ -9,48 +9,50 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.59f68617.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.e09b88d5.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.b41e89c9.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.581b52dd.css">
 </head>
 
 <body>
   <div id="app">
 
-    <!-- menu open icon -->
-    <div class="menuIcon openMenuIcon">
-      <i class="fa-solid fa-bars "></i>
-    </div>
-    <!-- menu open icon -->
+    <div class="threeD-container" id="3D-container">
 
-    <!-- main menu -->
-    <div class="menu closeMenu">
-
-      <div class="reset">
-        <i class="fa-solid fa-recycle" id="reset"></i>
+      <!-- menu open icon -->
+      <div class="menuIcon openMenuIcon">
+        <i class="fa-solid fa-bars "></i>
       </div>
+      <!-- menu open icon -->
 
-      <div class="closeMenuIcon">
-        <i class="fa-solid fa-times"></i>
-      </div>
+      <!-- main menu -->
+      <div class="menu closeMenu">
 
-      <h1>Packer <br> Controller</h1>
-      <hr>
+        <div class="reset">
+          <i class="fa-solid fa-recycle" id="reset"></i>
+        </div>
 
-      <h3>
-        Scale
-        <span class="scale">
-          1m
-          <i class="fa-solid fa-arrow-right-long"></i>
-          100px
-        </span>
-      </h3>
+        <div class="closeMenuIcon">
+          <i class="fa-solid fa-times"></i>
+        </div>
 
-      <div class="sectionTitle">
-        Load data
-        <div class="line"></div>
-      </div>
+        <h1>Packer <br> Controller</h1>
+        <hr>
 
-      <!-- <div class="csv">
+        <h3>
+          Scale
+          <span class="scale">
+            1m
+            <i class="fa-solid fa-arrow-right-long"></i>
+            100px
+          </span>
+        </h3>
+
+        <div class="sectionTitle">
+          Load data
+          <div class="line"></div>
+        </div>
+
+        <!-- <div class="csv">
         <div class="formContainer ">
           <h3 class="packAdd">
             <span>csv</span>
@@ -72,26 +74,26 @@
 
       </div> -->
 
-      <div class="api">
-        <div class="formContainer ">
-          <h3 class="packAdd">
-            <span>Api</span>
-            <i class="fa-solid fa-circle-plus" id="openApi"></i>
-          </h3>
+        <div class="api">
+          <div class="formContainer ">
+            <h3 class="packAdd">
+              <span>Api</span>
+              <i class="fa-solid fa-circle-plus" id="openApi"></i>
+            </h3>
 
-          <div class="formContainerContentClose" id="api">
-            <p>Please insert the url of the api</p>
-            <div class="upload">
-              <p class="inputLabel">API URL</p>
+            <div class="formContainerContentClose" id="api">
+              <p>Please insert the url of the api</p>
+              <div class="upload">
+                <p class="inputLabel">API URL</p>
 
-              <input type="text" class="input" id="apiUrl" />
-              <button id="loadApi">load</button>
+                <input type="text" class="input" id="apiUrl" />
+                <button id="loadApi">load</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- <div class="localstorage">
+        <!-- <div class="localstorage">
         <div class="formContainer ">
           <h3 class="packAdd">
             <span>Local storage (default)</span>
@@ -108,128 +110,127 @@
         </div>
       </div> -->
 
-      <div class="sectionTitle">
-        Add data manually
-        <div class="line"></div>
+        <div class="sectionTitle">
+          Add data manually
+          <div class="line"></div>
 
-      </div>
+        </div>
 
-      <div class="formContainer ">
-        <h3 class="packAdd">
-          <span>Vehicule</span>
-          <i class="fa-solid fa-circle-plus" id="openVehicule"></i>
-        </h3>
+        <div class="formContainer ">
+          <h3 class="packAdd">
+            <span>Vehicule</span>
+            <i class="fa-solid fa-circle-plus" id="openVehicule"></i>
+          </h3>
 
-        <div class="formContainerContentClose" id="vehicule">
-          <div class="packInfo">
-            <div>
-              Dimensions
+          <div class="formContainerContentClose" id="vehicule">
+            <div class="packInfo">
+              <div>
+                Dimensions
+              </div>
+              <div class="packInfo-numbers" id="containerDetails"></div>
             </div>
-            <div class="packInfo-numbers" id="containerDetails"></div>
+            <form class="packageForm" id="containerForm">
+              <p class="inputLabel">Width</p>
+              <input type="number" min="0" max="16" step="0.01" id="containerWidth" class="input" required>
+              <p class="inputLabel">Height </p>
+              <input type="number" min="0" max="4" step="0.01" id="containerHeight" class="input" required>
+              <p class="inputLabel">Lenght </p>
+              <input type="number" min="0" max="3" step="0.01" id="containerLenght" class="input" required>
+              <p class="inputLabel">Capacity </p>
+              <input type="number" min="0" value="0" step="0.01" id="containerCapacity" class="input" required>
+
+              <button class="btn">Add / Update</button>
+            </form>
           </div>
-          <form class="packageForm" id="containerForm">
-            <p class="inputLabel">Width</p>
-            <input type="number" min="0" max="16" step="0.01" id="containerWidth" class="input" required>
-            <p class="inputLabel">Height </p>
-            <input type="number" min="0" max="4" step="0.01" id="containerHeight" class="input" required>
-            <p class="inputLabel">Lenght </p>
-            <input type="number" min="0" max="3" step="0.01" id="containerLenght" class="input" required>
-            <p class="inputLabel">Capacity </p>
-            <input type="number" min="0" value="0" step="0.01" id="containerCapacity" class="input" required>
-
-            <button class="btn">Add / Update</button>
-          </form>
         </div>
-      </div>
 
-      <div class="formContainer">
-        <h3 class="packAdd">
-          <span>Colis</span>
-          <i class="fa-solid fa-circle-plus" id="openPackages"></i>
-        </h3>
-        <div class="formContainerContentClose" id="packages">
-          <div id="packageDetails">
+        <div class="formContainer">
+          <h3 class="packAdd">
+            <span>Colis</span>
+            <i class="fa-solid fa-circle-plus" id="openPackages"></i>
+          </h3>
+          <div class="formContainerContentClose" id="packages">
+            <div id="packageDetails">
+            </div>
+
+            <form class="packageForm" id="packForm">
+              <div class="randomPack">
+                <p>colis data</p>
+                <button type="button" id="random">Random</button>
+              </div>
+              <p class="inputLabel">Label</p>
+              <input type="text" id="packLabel" class="input">
+              <div class="inputs">
+                <div>
+                  <p class="inputLabel">Width</p>
+                  <input type="number" min="0" max="5" step="0.01" id="packWidth" class="input" required>
+                </div>
+                <div>
+                  <p class="inputLabel">Height </p>
+                  <input type="number" min="0" max="4" step="0.01" id="packHeight" class="input" required>
+                </div>
+                <div>
+                  <p class="inputLabel">Lenght </p>
+                  <input type="number" min="0" max="3" step="0.01" id="packLenght" class="input" required>
+                </div>
+              </div>
+              <div class="inputs">
+                <div>
+                  <p class="inputLabel">Quantity </p>
+                  <input type="number" min="0" id="packQuantity" class="input" required>
+                </div>
+                <div>
+                  <p class="inputLabel">StackingCapacity </p>
+                  <input type="number" min="-1" id="packStackingCapacity" class="input" value="-1" required>
+                </div>
+                <div>
+                  <p class="inputLabel">Priority </p>
+                  <input type="number" min="0" value="0" id="packPriority" class="input" required>
+                </div>
+              </div>
+
+
+              <p class="inputLabel">Rotation </p>
+              <div>
+                <div>
+                  <input type="checkbox" id="base" role="base" required checked>
+                  <label for="base">Base</label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="rightSide">
+                  <label for="rightSide">Right side</label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="frontSide">
+                  <label for="frontSide">Front side</label>
+                </div>
+              </div>
+
+              <button class="btn">Add</button>
+            </form>
           </div>
-
-          <form class="packageForm" id="packForm">
-            <div class="randomPack">
-              <p>colis data</p>
-              <button type="button" id="random">Random</button>
-            </div>
-            <p class="inputLabel">Label</p>
-            <input type="text" id="packLabel" class="input">
-            <div class="inputs">
-              <div>
-                <p class="inputLabel">Width</p>
-                <input type="number" min="0" max="5" step="0.01" id="packWidth" class="input" required>
-              </div>
-              <div>
-                <p class="inputLabel">Height </p>
-                <input type="number" min="0" max="4" step="0.01" id="packHeight" class="input" required>
-              </div>
-              <div>
-                <p class="inputLabel">Lenght </p>
-                <input type="number" min="0" max="3" step="0.01" id="packLenght" class="input" required>
-              </div>
-            </div>
-            <div class="inputs">
-              <div>
-                <p class="inputLabel">Quantity </p>
-                <input type="number" min="0" id="packQuantity" class="input" required>
-              </div>
-              <div>
-                <p class="inputLabel">StackingCapacity </p>
-                <input type="number" min="-1" id="packStackingCapacity" class="input" value="-1" required>
-              </div>
-              <div>
-                <p class="inputLabel">Priority </p>
-                <input type="number" min="0" value="0" id="packPriority" class="input" required>
-              </div>
-            </div>
-
-
-            <p class="inputLabel">Rotation </p>
-            <div>
-              <div>
-                <input type="checkbox" id="base" role="base" required checked>
-                <label for="base">Base</label>
-              </div>
-
-              <div>
-                <input type="checkbox" id="rightSide">
-                <label for="rightSide">Right side</label>
-              </div>
-
-              <div>
-                <input type="checkbox" id="frontSide">
-                <label for="frontSide">Front side</label>
-              </div>
-            </div>
-
-            <button class="btn">Add</button>
-          </form>
         </div>
-      </div>
 
-      <div class="sectionTitle">
-        Solving result
-        <div class="line"></div>
+        <div class="sectionTitle">
+          Solving result
+          <div class="line"></div>
 
-      </div>
-      <div class="formContainer">
-        <h3 class="packAdd">
-          <span>Result</span>
-          <i class="fa-solid fa-circle-plus" id="openResult"></i>
-        </h3>
-        <div class="formContainerContentClose" id="result">
         </div>
+
+        <div class="formContainer">
+          <h3 class="packAdd">
+            <span>Result</span>
+            <i class="fa-solid fa-circle-plus" id="openResult"></i>
+          </h3>
+          <div class="formContainerContentClose" id="result">
+          </div>
+        </div>
+
+        <button class="solveBtn" type="button" id="solve">Solve</button>
       </div>
-
-      <button class="solveBtn" type="button" id="solve">Solve</button>
-    </div>
-    <!-- main menu -->
-
-    <div class="threeD-container" id="3D-container">
+      <!-- main menu -->
 
       <!-- camera controller -->
       <div class="cameraController">
@@ -334,40 +335,7 @@
         </div>
       </div>
 
-      <!-- loader -->
-      <!-- <div class="loader">
-        <div class="box box0">
-          <div></div>
-        </div>
-        <div class="box box1">
-          <div></div>
-        </div>
-        <div class="box box2">
-          <div></div>
-        </div>
-        <div class="box box3">
-          <div></div>
-        </div>
-        <div class="box box4">
-          <div></div>
-        </div>
-        <div class="box box5">
-          <div></div>
-        </div>
-        <div class="box box6">
-          <div></div>
-        </div>
-        <div class="box box7">
-          <div></div>
-        </div>
-        <div class="ground">
-          <div></div>
-        </div>
-      </div> -->
-      <!-- loader -->
-
     </div>
-
   </div>
 
   <!-- GSAP Library -->

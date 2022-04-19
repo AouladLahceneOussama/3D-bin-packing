@@ -398,13 +398,13 @@ class Packer {
                 }
 
                 //delete the y point on the same axe
-                if (point1.x == point2.x && point1.z == point2.z) {
+                if (point1.x == point2.x && point1.z == point2.z && pack1 == pack2) {
                     // console.log(this.openPoints[j])
                     this.openPoints.splice(j, 1);
                 }
 
                 //delete the z point on the same axe
-                if (point1.y == point2.y && point1.z == point2.z && !point1.ignored) {
+                if (point1.y == point2.y && point1.z == point2.z && !point1.ignored && pack1 == pack2) {
                     if (point2.type != "S") {
                         // console.log(this.openPoints[j])
                         this.openPoints.splice(j, 1);
@@ -478,7 +478,7 @@ class Packer {
                 let point = topPoints[i]
                 // console.log(point, maxHeight)
                 if (point.data.y == maxHeight) {
-                    // console.log(this.openPoints[point.index])
+                    console.log(this.openPoints[point.index])
                     this.openPoints.splice(point.index, 1)
                 }
             }
@@ -514,8 +514,14 @@ class Packer {
 
                 for (let j = i + 1; j < pointAndIndex.length; j++) {
                     let p1 = pointAndIndex[j];
+                    let cdt = 
+                        Math.abs(p1.data.z - p.data.z) % packGroup.l == 0
+                        && Math.abs(p1.data.x - p.data.x) % packGroup.w == 0
+                        && p.data.y == p1.data.y
+                        && p1.data.z > p.data.z
+                        && p1.data.x > p.data.x;
 
-                    if (Math.abs(p1.data.z - p.data.z) % 2 == 0 && p.data.y == p1.data.y)
+                    if (cdt) 
                         remove.push(p1.index);
                 }
             }
@@ -563,9 +569,8 @@ class Packer {
                         this.removeDiagonalPoints(this.packagesLoaded[this.packagesLoaded.length - 2]);
                 }
             }
-            // this.removeOpenPointForNextPriority();
+            this.removeOpenPointForNextPriority();
         }
-        // this.removeDiagonalPoints(packGroup);
 
         console.log("packagesLoaded => ");
         console.log(this.packagesLoaded)
@@ -667,7 +672,7 @@ class Packer {
             return a.z - b.z;
         });
 
-        console.log(pack, sidePoint);
+        // console.log(pack, sidePoint);
 
         var index = null;
         if (sidePoint.length > 0) {
@@ -709,17 +714,17 @@ class Packer {
                                 && p.z + p.l >= tmpSidePoint.z;
                         });
 
-                        if (tmpSidePoint.z == 0 || isPointInPack.length != 0){
+                        if (tmpSidePoint.z == 0 || isPointInPack.length != 0) {
                             sideOpenPoint.push(tmpSidePoint);
 
                             index = this.openPoints.findIndex(p => {
                                 return p.x == sidePoint[0].x && p.y == pack.y && p.z == sidePoint[0].z;
                             });
                         }
-                            
+
                     }
                     else {
-                        if (check.length > 0){
+                        if (check.length > 0) {
                             sideOpenPoint.push(tmpSidePoint);
 
                             index = this.openPoints.findIndex(p => {
@@ -728,7 +733,7 @@ class Packer {
                         }
                     }
 
-                    
+
                 }
             }
 
