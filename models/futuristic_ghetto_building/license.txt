@@ -1,0 +1,11 @@
+Model Information:
+* title:	Futuristic ghetto building
+* source:	https://sketchfab.com/3d-models/futuristic-ghetto-building-e73f9bb9981d469c8a8ccdc1f168faad
+* author:	3DHaupt (https://sketchfab.com/dennish2010)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Futuristic ghetto building" (https://sketchfab.com/3d-models/futuristic-ghetto-building-e73f9bb9981d469c8a8ccdc1f168faad) by 3DHaupt (https://sketchfab.com/dennish2010) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
