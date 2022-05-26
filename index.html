@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.b41e89c9.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.581b52dd.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.28bd287c.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.a49d7bbb.css">
 </head>
 
 <body>
@@ -18,21 +18,66 @@
 
     <div class="threeD-container" id="3D-container">
 
+      <!-- loader -->
+      <div class="threeD-container-loader threeD-container-loader--show">
+        <div class="loader-content">
+          <div>Loading</div>
+          <div class="dot-flashing"></div>
+        </div>
+      </div>
+      <!-- loader -->
+
+      <!-- packhover -->
+      <!-- <div class="pack-hover-perspective">
+        <div class="pack-hover-container" data-before="pack dallae moussem">
+          <div class="pack-hover-content">
+
+            <div class="item">
+              <span class="title">Dimensions</span>
+              <span>1,2,0.5</span>
+            </div>
+
+            <div class="item">
+              <span class="title">Rotations</span>
+              <span>B, F, R</span>
+            </div>
+
+            <div class="item">
+              <span class="title">Quantity</span>
+              <span>25</span>
+            </div>
+
+            <div class="item">
+              <span class="title">Loaded</span>
+              <span>24</span>
+            </div>
+
+          </div>
+        </div>
+      </div> -->
+      <!-- packhover -->
+
       <!-- menu open icon -->
       <div class="menuIcon openMenuIcon">
-        <i class="fa-solid fa-bars "></i>
+        <i class="fa-solid fa-bars"></i>
       </div>
       <!-- menu open icon -->
 
       <!-- main menu -->
       <div class="menu closeMenu">
 
-        <div class="reset">
-          <i class="fa-solid fa-recycle" id="reset"></i>
-        </div>
+        <div class="menu-icons">
+          <div class="menu-icon" id="switchManuelleMode">
+            <i class="fa-solid fa-hand-back-fist"></i>
+          </div>
 
-        <div class="closeMenuIcon">
-          <i class="fa-solid fa-times"></i>
+          <div class="menu-icon reset" id="reset">
+            <i class="fa-solid fa-recycle"></i>
+          </div>
+
+          <div class="menu-icon" id="closeMenuIcon">
+            <i class="fa-solid fa-times"></i>
+          </div>
         </div>
 
         <h1>Packer <br> Controller</h1>
@@ -52,27 +97,26 @@
           <div class="line"></div>
         </div>
 
-        <!-- <div class="csv">
-        <div class="formContainer ">
-          <h3 class="packAdd">
-            <span>csv</span>
-            <i class="fa-solid fa-circle-plus" id="openCSV"></i>
-          </h3>
+        <div class="csv">
+          <div class="formContainer ">
+            <h3 class="packAdd">
+              <span>csv</span>
+              <i class="fa-solid fa-circle-plus" id="openCSV"></i>
+            </h3>
 
-          <div class="formContainerContentClose" id="csv">
-            <p>Please follow the structure of this sample</p>
-            <a href="csv-files/csv-example.csv">csv sample</a>
-            <div class="upload">
-              <p>Upload your file</p>
-              <input type="file" id="actual-btn" hidden />
-              <label for="actual-btn">Choose File</label>
-              <span id="file-chosen">No file chosen</span>
+            <div class="formContainerContentClose" id="csv">
+              <p>Please follow the structure of this sample</p>
+              <a href="csv-files/csv-example.csv">csv sample</a>
+              <div class="upload">
+                <p>Upload your file</p>
+                <input type="file" id="actual-btn" hidden />
+                <label for="actual-btn">Choose File</label>
+                <span id="file-chosen">No file chosen</span>
+              </div>
+
             </div>
-
           </div>
         </div>
-
-      </div> -->
 
         <div class="api">
           <div class="formContainer ">
@@ -114,6 +158,55 @@
           Add data manually
           <div class="line"></div>
 
+        </div>
+
+        <div class="formContainer ">
+          <h3 class="packAdd">
+            <span>Route</span>
+            <i class="fa-solid fa-circle-plus" id="openRoutes"></i>
+          </h3>
+
+          <div class="formContainerContentClose" id="routes">
+            <div id="routesDetails">
+            </div>
+            <form class="packageForm" id="routesForm">
+
+              <div class="routes-number">
+                <div id="routeDecrement" class="route-indicator">-</div>
+                <div>
+                  <input type="number" min="1" value="1" id="routesNumber" disabled>
+                </div>
+                <div id="routeIncrement" class="route-indicator">+</div>
+              </div>
+
+              <div>
+                Route specifications
+              </div>
+
+              <div id="routeInputs">
+                <div class="inputs">
+                  <div>
+                    <p class="inputLabel">From</p>
+                    <input type="text" class="input routeFrom" required>
+                  </div>
+                  <div>
+                    <p class="inputLabel">To</p>
+                    <input type="text" class="input routeTo" required>
+                  </div>
+                  <div>
+                    <p class="inputLabel">Type</p>
+                    <select class="input routeType" required>
+                      <option value="dechargement">D</option>
+                      <option value="chargement">C</option>
+                      <option value="dechargement/chargement">D et C</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn">Add</button>
+            </form>
+          </div>
         </div>
 
         <div class="formContainer ">
@@ -185,7 +278,8 @@
                 </div>
                 <div>
                   <p class="inputLabel">Priority </p>
-                  <input type="number" min="0" value="0" id="packPriority" class="input" required>
+                  <select id="packPriority" class="input" required>
+                  </select>
                 </div>
               </div>
 
@@ -225,6 +319,9 @@
             <i class="fa-solid fa-circle-plus" id="openResult"></i>
           </h3>
           <div class="formContainerContentClose" id="result">
+            <div class="empty-result">
+              Not solved yet
+            </div>
           </div>
         </div>
 
@@ -287,7 +384,7 @@
             </div>
             <div>
               <p class="inputLabel">Priority </p>
-              <input type="number" min="0" value="0" id="pack_Detail_Priority" class="input" required>
+              <select id="pack_Detail_Priority" class="input" required></select>
             </div>
           </div>
 
@@ -312,6 +409,25 @@
           </div>
         </div>
 
+        <div class="sub">
+          <div class="sub-title">
+            <p>Advanced parameters</p>
+            <i class="fa-solid fa-angle-down toggleAdvParam--close" id="toggleAdvParam"></i>
+          </div>
+
+          <div class="sub-container sub-container--close">
+
+            <div class="options">
+              <p>Multiple Priorities</p>
+              <i class="fa-solid fa-circle-plus" id="addPrioInputs"></i>
+            </div>
+
+            <div id="multiple-prio">
+
+            </div>
+          </div>
+        </div>
+
         <div class="pack-detail-down">
           <button class="btn-update" id="updatePack">Update</button>
           <button class="btn-delete" id="deletePack">Delete</button>
@@ -326,6 +442,7 @@
       </div>
       <!-- number of boxes controller -->
 
+      <!-- logger -->
       <div class="logger">
         <div class="sectionTitle">
           Logs
@@ -334,6 +451,7 @@
         <div class="logMsg">
         </div>
       </div>
+      <!-- logger -->
 
     </div>
   </div>

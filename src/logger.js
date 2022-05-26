@@ -37,7 +37,7 @@ class Logger {
         let msg = " <div class='logDetail'><h3>" + this.action + "</h3>" + logTime + "</div>";
         $(".logMsg").append(msg);
 
-        $(".logMsg").animate({ scrollTop: $('.logMsg').prop("scrollHeight") }, 500);
+        $(".logMsg").animate({ scrollTop: $('.logMsg').prop("scrollHeight") }, 250);
     }
 }
 

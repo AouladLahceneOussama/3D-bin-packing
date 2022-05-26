@@ -18,20 +18,48 @@ class Packer {
 
 
         Pack.allInstances.map((pack) => {
-            for (var i = 0; i < pack.q; i++) {
-                newPack = {
-                    ...pack,
-                    w: pack.rotations[0].w,
-                    h: pack.rotations[0].h,
-                    l: pack.rotations[0].l,
-                    id: pack.id + "-" + i,
-                    parent_id: pack.id
-                };
-                delete newPack.q;
-                packagesToLoad.push(newPack)
+
+            // console.log(pack)
+            if (pack.multiplePrio) {
+                let count = 0;
+                for (let i = 0; i < pack.subQuantities.length; i++) {
+                    let subPrio = pack.subQuantities[i];
+                    console.log(subPrio)
+                    for (let j = 0; j < subPrio.n; j++) {
+                        newPack = {
+                            ...pack,
+                            priority: subPrio.p,
+                            w: pack.rotations[0].w,
+                            h: pack.rotations[0].h,
+                            l: pack.rotations[0].l,
+                            id: pack.id + "-" + count++,
+                            parent_id: pack.id
+                        };
+
+                        delete newPack.q;
+                        packagesToLoad.push(newPack);
+                    }
+                }
+            }
+            else {
+                // console.log(pack)
+                for (var i = 0; i < pack.q; i++) {
+                    newPack = {
+                        ...pack,
+                        w: pack.rotations[0].w,
+                        h: pack.rotations[0].h,
+                        l: pack.rotations[0].l,
+                        id: pack.id + "-" + i,
+                        parent_id: pack.id
+                    };
+
+                    delete newPack.q;
+                    packagesToLoad.push(newPack);
+                }
             }
         });
 
+        console.log(packagesToLoad);
         //group the packages with their priorities
         let prioritesedPackagesToLoad = packagesToLoad.reduce((priorityGroup, pack) => {
             const prio = pack.priority;
@@ -60,12 +88,13 @@ class Packer {
         return [prioritesedPackagesToLoad, priorities];
     }
 
-    canFit(space, pack) {
-        if (pack.w <= space.w && pack.l <= space.l && pack.h <= space.h) return true;
-        return false;
-    }
+    // canFit(space, pack) {
+    //     if (pack.w <= space.w && pack.l <= space.l && pack.h <= space.h) return true;
+    //     return false;
+    // }
 
     //recursive method that runs unltil it find the last element with same id on top of each other
+
     getDownPack(downPack, count, id) {
         if (downPack == -1 || downPack.parent_id != id) return count;
         else {
@@ -439,16 +468,17 @@ class Packer {
         )
     }
 
-    getDifference(array1, array2) {
-        return array1.filter(obj1 => {
-            return !array2.some(obj2 => {
-                return obj1.id === obj2.parent_id;
-            });
-        });
-    }
+    // getDifference(array1, array2) {
+    //     return array1.filter(obj1 => {
+    //         return !array2.some(obj2 => {
+    //             return obj1.id === obj2.parent_id;
+    //         });
+    //     });
+    // }
 
     //remove the point to give the ability to the next priority to be distributed in the container
     //?????????????????????? need to be fixed ?????????????????????
+
     removeOpenPointForNextPriority() {
         let topPoints = [];
 
@@ -476,13 +506,40 @@ class Packer {
 
             for (let i = topPoints.length - 1; i >= 0; i--) {
                 let point = topPoints[i]
-                // console.log(point, maxHeight)
+                console.log(point, maxHeight)
                 if (point.data.y == maxHeight) {
                     console.log(this.openPoints[point.index])
                     this.openPoints.splice(point.index, 1)
                 }
             }
         }
+    }
+
+    removePointForNextPriority(priorities, priorityIndex) {
+        let prevPrio = priorities[priorityIndex - 1] || priorities[0];
+        let thisPrio = priorities[priorityIndex];
+
+        console.log(priorities[priorityIndex], prevPrio)
+        let nextPrioPoint = this.openPoints.filter(p => {
+            // return p.prio <= thisPrio && p.type != "T";
+            return p.prio >= prevPrio && p.prio <= thisPrio && p.type != "T";
+        });
+
+        console.log(nextPrioPoint)
+        // let lastTopPoint = this.openPoints.filter(p => {
+        //     return p.prio == thisPrio && p.type == "T";
+        // });
+
+        // let newOpenPoint = [...nextPrioPoint, ...lastTopPoint];
+        let newOpenPoint = [...nextPrioPoint];
+
+        this.openPoints = newOpenPoint;
+    }
+
+    removePointsNextPriority(){
+        this.openPoints = this.openPoints.filter( p => {
+            return p.y == 0
+        });
     }
 
     //get the indexes of the packs that meet certain condition
@@ -514,14 +571,14 @@ class Packer {
 
                 for (let j = i + 1; j < pointAndIndex.length; j++) {
                     let p1 = pointAndIndex[j];
-                    let cdt = 
+                    let cdt =
                         Math.abs(p1.data.z - p.data.z) % packGroup.l == 0
                         && Math.abs(p1.data.x - p.data.x) % packGroup.w == 0
                         && p.data.y == p1.data.y
                         && p1.data.z > p.data.z
                         && p1.data.x > p.data.x;
 
-                    if (cdt) 
+                    if (cdt)
                         remove.push(p1.index);
                 }
             }
@@ -550,8 +607,9 @@ class Packer {
     //make only one logic to treat all the packages
     //trait the case if the pack is bigger than the container then it should be ignored
     solve(container, packages, priorities) {
-        for (let groupIndex = 0; groupIndex < priorities.length; groupIndex++) {
-            let packs = packages[priorities[groupIndex]];
+
+        for (let priorityIndex = 0; priorityIndex < priorities.length; priorityIndex++) {
+            let packs = packages[priorities[priorityIndex]];
 
             for (let packIndex = 0; packIndex < packs.length; packIndex++) {
 
@@ -569,7 +627,10 @@ class Packer {
                         this.removeDiagonalPoints(this.packagesLoaded[this.packagesLoaded.length - 2]);
                 }
             }
-            this.removeOpenPointForNextPriority();
+
+            this.removePointsNextPriority();
+            // this.removeOpenPointForNextPriority();
+            // this.removePointForNextPriority(priorities, priorityIndex);
         }
 
         console.log("packagesLoaded => ");
@@ -693,7 +754,8 @@ class Packer {
                         y: pack.y,
                         z: sidePoint[0].z,
                         type: "S",
-                        ignored: false
+                        ignored: false,
+                        prio: pack.priority
                     }
 
                     let check = this.packagesLoaded.filter(pack => {
@@ -753,7 +815,8 @@ class Packer {
                         y: pack.y,
                         z: pack.z + pack.l,
                         type: "S",
-                        ignored: false
+                        ignored: false,
+                        prio: pack.priority
                     };
 
                     let check = this.packagesLoaded.filter(pack => {
@@ -804,7 +867,8 @@ class Packer {
 
         return sideOpenPoint;
     }
-    //create the open point ???????????????????? this function need to be traited
+
+    //create the open point
     createOpenPoints(coords, pack) {
 
         let validOpenPoint = [
@@ -814,7 +878,8 @@ class Packer {
                 y: coords.y + pack.h,
                 z: coords.z,
                 type: "T",
-                ignored: false
+                ignored: false,
+                prio: pack.priority
             },
         ];
 
@@ -825,7 +890,8 @@ class Packer {
                 y: coords.y,
                 z: coords.z + pack.l,
                 type: "R",
-                ignored: false
+                ignored: false,
+                prio: pack.priority
             },
             {
                 pointOwner: pack.id,
@@ -833,7 +899,8 @@ class Packer {
                 y: coords.y,
                 z: coords.z,
                 type: "F",
-                ignored: false
+                ignored: false,
+                prio: pack.priority
             }
         ];
 
@@ -868,13 +935,19 @@ class Packer {
                         if (this.isPointContainedInSpace(packSpace, testPoint, false)) {
                             let loadedPackInSpace = this.packagesLoaded.filter(p => {
                                 // console.log(p.id, point);
-                                return p.x <= point.x
-                                    && p.x + p.w > point.x
-                                    && p.z <= point.z
-                                    && p.z + p.l > point.z
+                                return p.x <= point.x + 1
+                                    && p.x + p.w > point.x + 1
+                                    && p.z <= point.z + 1
+                                    && p.z + p.l > point.z + 1
                                     && p.y == coords.y
                                     && p.id != point.pointOwner
                             });
+
+                            let dis;
+                            if (point.type == "R") dis = packSpace[3].z - point.z;
+                            if (point.type == "F") dis = packSpace[3].x - point.x;
+
+                            // console.log(point.type, pack, pack.id, dis);
 
                             // console.log(loadedPackInSpace);
                             if (loadedPackInSpace.length == 0) {
