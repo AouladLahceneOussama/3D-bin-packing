@@ -1,0 +1,11 @@
+Model Information:
+* title:	[XYZ HW] Details - Lift Truck
+* source:	https://sketchfab.com/3d-models/xyz-hw-details-lift-truck-286cb8ba408547b9b5290e543a01214d
+* author:	diSSSlocated (https://sketchfab.com/russian_kOndr)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "[XYZ HW] Details - Lift Truck" (https://sketchfab.com/3d-models/xyz-hw-details-lift-truck-286cb8ba408547b9b5290e543a01214d) by diSSSlocated (https://sketchfab.com/russian_kOndr) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
