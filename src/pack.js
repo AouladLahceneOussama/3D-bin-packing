@@ -1,5 +1,7 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
 import { scale_meter_px, scene } from "./configurations.js";
+import Logger from './logger.js';
+import Route from './routes.js';
 
 let Id = 0;
 
@@ -7,7 +9,7 @@ class Pack {
 
     static allInstances = [];
 
-    constructor(label, width, height, lenght, quantity, stackingCapacity, rotations, priority) {
+    constructor(label, width, height, lenght, quantity, stackingCapacity, rotations, priority, subQuantities = []) {
         this.id = Id++;
         this.label = label;
         this.w = parseInt(width * scale_meter_px);
@@ -20,6 +22,8 @@ class Pack {
         this.dimensions = this.setDimensions(rotations);
         this.priority = parseInt(priority);
         this.color = Math.random();
+        this.multiplePrio = subQuantities.length > 0 ? true : false;
+        this.subQuantities = subQuantities;
 
         //store the instances created
         Pack.allInstances.push(this.getPack);
@@ -40,6 +44,8 @@ class Pack {
             stackC: this.stackingCapacity,
             rotations: this.dimensions,
             rotateDirections: this.rotations,
+            multiplePrio: this.multiplePrio,
+            subQuantities: this.subQuantities,
             color: this.color,
         }
     }
@@ -56,6 +62,7 @@ class Pack {
             priority: this.priority,
             stackC: this.stackingCapacity,
             rotations: this.rotations,
+            subQuantities: this.subQuantities,
         }
 
     }
@@ -141,7 +148,7 @@ class Pack {
             let packages = JSON.parse(localStorage.getItem("packages"));
 
             packages.forEach(p => {
-                new Pack(p.label, p.w, p.h, p.l, p.q, p.stackC, p.rotations, p.priority);
+                new Pack(p.label, p.w, p.h, p.l, p.q, p.stackC, p.rotations, p.priority, p.subQuantities);
             });
 
             Pack.allInstances.forEach(pack => {
@@ -161,7 +168,9 @@ class Pack {
         packages.push(this.getPackToLocalStorage)
         localStorage.setItem("packages", JSON.stringify(packages));
 
-        Pack.loadPacks()
+        Pack.loadPacks();
+        let logger = new Logger("Adding Pack", 0.01);
+        logger.dispatchMessage();
     }
 
     static updatePackLocalstorage() {
@@ -181,6 +190,8 @@ class Pack {
                 priority: pack.priority,
                 stackC: parseInt(pack.stackC),
                 rotations: pack.rotateDirections,
+                multiplePrio: pack.subQuantities.length > 0 ? true : false,
+                subQuantities: pack.subQuantities
             });
         });
 
@@ -280,6 +291,8 @@ class Pack {
             stackC: parseInt(updatedData.stack),
             rotateDirections: updatedData.r,
             rotations: setDimensions(updatedData.r, parseInt(updatedData.w), parseInt(updatedData.h), parseInt(updatedData.l)),
+            multiplePrio: updatedData.subQuantities.length > 0 ? true : false,
+            subQuantities: updatedData.subQuantities
         }
 
         let newPack = {
@@ -297,6 +310,8 @@ class Pack {
             $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
         });
 
+        let logger = new Logger("Updating Pack", 0.01);
+        logger.dispatchMessage();
     }
 
     //remove the pack
@@ -311,13 +326,22 @@ class Pack {
             var packDim = pack.w / scale_meter_px + " , " + pack.h / scale_meter_px + " , " + pack.l / scale_meter_px + " ( " + pack.q + " ) ";
             $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
         });
+
+        let logger = new Logger("Remove Pack", 0.01);
+        logger.dispatchMessage();
     }
 
     //load the packs created
     static loadPacks() {
 
-        Pack.removeBoxesFromTheScene()
+        function showData(pack) {
+            var packDim = pack.w / scale_meter_px + " , " + pack.h / scale_meter_px + " , " + pack.l / scale_meter_px + " ( " + pack.q + " ) ";
+            $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
+        }
 
+        Pack.removeBoxesFromTheScene()
+        $("#packageDetails div").remove();
+        
         let packages = Pack.allInstances;
         let boxes = new THREE.Group();
         boxes.name = "pack_shower";
@@ -342,6 +366,8 @@ class Pack {
             box.castShadow = true;
             box.receiveShadow = true;
             box.userData.id = p.id;
+            box.userData.hover = true;
+            box.userData.dragDrop = true;
             box.userData.clickable = true;
             box.userData.actif = false;
             box.userData.name = "Pack";
@@ -360,6 +386,8 @@ class Pack {
 
             boxGeometry.translate(p.w / 2, p.h / 2, p.l / 2);
             boxes.add(box)
+
+            showData(p);
         }
 
         scene.add(boxes)
@@ -367,6 +395,7 @@ class Pack {
 
     //load the packs from localstorage
     static loadPacksFromLocalStorage() {
+        // Route.init();
         Pack.init();
         Pack.loadPacks();
     }

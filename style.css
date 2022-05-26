@@ -1,4 +1,5 @@
-body, html{
+body,
+html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -15,32 +16,32 @@ body, html{
   width: 1px;
   height: 0px;
 }
- 
+
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
- 
+
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
   outline: 1px solid slategrey;
 }
 
-a{
+a {
   text-decoration: none;
 }
 
-.container{
+.container {
   display: flex;
 }
 
-.sectionTitle{
+.sectionTitle {
   font-weight: bolder;
   margin: 5px 0;
   text-transform: uppercase;
   font-size: 14px;
 }
 
-.sectionTitle .line{
+.sectionTitle .line {
   margin-top: 2px;
   width: 50px;
   height: 4px;
@@ -48,8 +49,8 @@ a{
   background-color: white;
 }
 
-.menuIcon{
-  z-index: 100;
+.menuIcon {
+  z-index: 2;
   position: absolute;
   top: 10px;
   color: white;
@@ -65,14 +66,15 @@ a{
   transition: .3s ease-in-out;
 }
 
-.menuIcon:hover{
+.menuIcon:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.menu{
+.menu {
   z-index: 100;
-  position: fixed;
+  position: absolute;
   top: 0px;
+  left: 0px;
   width: 340px;
   background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
@@ -83,7 +85,7 @@ a{
   transition: .3s ease-in-out;
 }
 
-.closeMenuIcon{
+.closeMenuIcon {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -99,58 +101,59 @@ a{
   transition: .3s ease-in-out;
 }
 
-.closeMenuIcon:hover{
+.closeMenuIcon:hover {
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
 }
 
-.closeMenu{
+.closeMenu {
   left: -100%;
 }
 
-.openMenu{
+.openMenu {
   left: 0px;
 }
 
-.openMenuIcon{
+.openMenuIcon {
   left: 10px;
 }
 
-.threeD-container{
+.threeD-container {
   position: relative;
   width: 100%;
   height: 100vh;
   outline: none;
+  overflow: hidden;
 }
 
-.form{
+.form {
   background-color: transparent;
   color: white;
   position: absolute;
   top: 100px;
-  left:50px
+  left: 50px
 }
 
-.download-result{
+.download-result {
   background-color: white;
   color: rgba(0, 0, 0, 1);
   padding: 5px 20px;
   border-radius: 20px;
 }
 
-.scale{
+.scale {
   font-size: 14px;
   padding-left: 20px;
 }
 
-.inputLabel{
+.inputLabel {
   margin: 5px 0 0 0;
   padding: 0;
   font-size: 13px;
   color: gray;
 }
 
-.input{
+.input {
   width: 100%;
   border: none;
   border-bottom: 2px solid white;
@@ -161,7 +164,11 @@ a{
   margin: 0 0 5px 0;
 }
 
-.btn{
+.input option {
+  color: black;
+}
+
+.btn {
   width: 100%;
   background-color: white;
   outline: none;
@@ -178,13 +185,13 @@ a{
   border: 1px solid white;
 }
 
-.btn:hover{
-  background-color:  rgba(0, 0, 0, 0.8);;
+.btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border: 1px solid white;
 }
 
-.formContainer{
+.formContainer {
   position: relative;
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 0 0 20px 20px;
@@ -192,21 +199,21 @@ a{
   transition: .3s ease-in-out;
 }
 
-.formContainer .formContainerContentOpen{
+.formContainer .formContainerContentOpen {
   height: 100%;
   padding: 30px 10px 0 10px;
   overflow: hidden;
-  transition:.3s ease;
+  transition: .3s ease;
 }
 
-.formContainer .formContainerContentClose{
+.formContainer .formContainerContentClose {
   height: 0px;
   padding: 20px 10px 0 10px;
   overflow: hidden;
-  transition:.3s ease;
+  transition: .3s ease;
 }
 
-.packInfo{
+.packInfo {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -214,12 +221,12 @@ a{
   margin: 4px 0;
 }
 
-.packInfo-numbers{
-  font-size:12px;
+.packInfo-numbers {
+  font-size: 12px;
   color: gray;
 }
 
-.formContainer .packAdd{
+.formContainer .packAdd {
   width: 102%;
   position: absolute;
   top: -28px;
@@ -239,8 +246,8 @@ a{
   transition: .3s ease-in-out;
 }
 
-.formContainer .packAdd i:hover{
-  color:rgba(0, 0, 0, 1);
+.formContainer .packAdd i:hover {
+  color: rgba(0, 0, 0, 1);
 }
 
 .formContainer .packAdd span {
@@ -250,22 +257,22 @@ a{
 }
 
 
-.packageForm{
-  margin-top:20px ;
+.packageForm {
+  margin-top: 20px;
 }
 
-.packageForm .randomPack{
+.packageForm .randomPack {
   display: flex;
   justify-content: space-between;
-  align-items: center; 
+  align-items: center;
 }
 
-.packageForm .randomPack p{
-  font-weight:bold;
+.packageForm .randomPack p {
+  font-weight: bold;
   text-transform: uppercase;
 }
 
-.packageForm .randomPack button{
+.packageForm .randomPack button {
   border: none;
   background-color: white;
   color: rgba(0, 0, 0, 0.8);
@@ -278,8 +285,35 @@ a{
 }
 
 /***** global classes *****/
+.menu-icons {
+  position: absolute;
+  justify-content: flex-start;
+  align-items: center;
+  display: flex;
+  top: 10px;
+  right: 10px;
+}
 
-.reset{
+.menu-icons .menu-icon {
+  color: rgba(0, 0, 0, 0.8);
+  background-color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: .3s ease-in-out;
+  margin: 0 4px;
+  width: 35px;
+  font-size: 20px;
+  height: 35px;
+  line-height: 37px;
+  text-align: center;
+}
+
+.menu-icons .menu-icon:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+/* .reset {
   position: absolute;
   top: 10px;
   right: 55px;
@@ -291,46 +325,46 @@ a{
   transition: .3s ease-in-out;
 }
 
-.reset:hover{
+.reset:hover {
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
-}
+} */
 
 
-.inputs{
+.inputs {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.inputs div{
+.inputs div {
   width: 32%;
-  padding-right:20px;
+  padding-right: 20px;
 }
 
-.inputs div:last-child{
-  padding:0px;
+.inputs div:last-child {
+  padding: 0px;
 }
 
-.result-detail{
+.result-detail {
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid white;
   padding: 10px 0;
 }
 
-.result-detail:last-child{
-  border:none
+.result-detail:last-child {
+  border: none
 }
 
-.result-detail .result-text{
+.result-detail .result-text {
   display: flex;
   justify-content: space-between;
   margin: 3px 0;
 }
 
 
-.solveBtn{
+.solveBtn {
   width: 30%;
   background-color: white;
   outline: none;
@@ -347,14 +381,14 @@ a{
   text-transform: uppercase;
 }
 
-.solveBtn:hover{
-  background-color:  rgba(0, 0, 0, 0.8);;
+.solveBtn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border: 1px solid white;
 }
 
 /***Pack Detail***/
-.pack-detail{
+.pack-detail {
   position: absolute;
   top: 10px;
   right: 90px;
@@ -363,16 +397,16 @@ a{
   border-radius: 5px;
   outline: none;
   overflow: hidden;
-  height: 344px;
+  max-height: 482px;
   transition: .3s ease-in-out;
 }
 
-.pack-detail-close{
-  height: 50px;
+.pack-detail-close {
+  max-height: 50px;
   transition: .3s ease-in-out;
 }
 
-.pack-detail .pack-detail-up{
+.pack-detail .pack-detail-up {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -386,22 +420,22 @@ a{
   font-weight: bold;
 }
 
-.pack-detail .pack-detail-up p{
-  padding-left: 10px ;
+.pack-detail .pack-detail-up p {
+  padding-left: 10px;
 }
 
-.pack-detail .pack-detail-up i{
-  padding-right: 10px ;
+.pack-detail .pack-detail-up i {
+  padding-right: 10px;
   cursor: pointer;
 }
 
-.pack-detail .pack-detail-content{
+.pack-detail .pack-detail-content {
   width: 300px;
   padding: 10px;
   color: white;
 }
 
-.pack-detail .input{
+.pack-detail .input {
   width: 100%;
   border: none;
   border-bottom: 2px solid black;
@@ -411,7 +445,7 @@ a{
   margin: 0 0 5px 0;
 }
 
-.pack-detail .pack-detail-down{
+.pack-detail .pack-detail-down {
   position: relative;
   display: flex;
   align-items: center;
@@ -423,7 +457,7 @@ a{
   backdrop-filter: blur(5px);
 }
 
-.pack-detail .pack-detail-down .btn-update{
+.pack-detail .pack-detail-down .btn-update {
   width: 100%;
   padding: 15px;
   border: none;
@@ -435,11 +469,11 @@ a{
   transition: .3s ease-in-out;
 }
 
-.pack-detail .pack-detail-down .btn-update:hover{
+.pack-detail .pack-detail-down .btn-update:hover {
   background-color: rgba(92, 92, 92, 0.3)
 }
 
-.pack-detail .pack-detail-down .btn-delete{
+.pack-detail .pack-detail-down .btn-delete {
   width: 100%;
   padding: 15px;
   border: none;
@@ -451,7 +485,7 @@ a{
   transition: .3s ease-in-out;
 }
 
-.pack-detail .pack-detail-down .btn-delete:hover{
+.pack-detail .pack-detail-down .btn-delete:hover {
   background-color: rgb(228, 55, 55);
 }
 
@@ -462,8 +496,8 @@ a{
 /***CameraController***/
 .cameraController {
   position: absolute;
-  z-index: 100;
-  top:27px;
+  z-index: 2;
+  top: 27px;
   right: 60px;
   perspective: 600px;
 }
@@ -481,57 +515,64 @@ a{
   height: 32px;
 }
 
-.cube__face--front  { 
+.cube__face--front {
   background: rgb(172, 172, 172);
-  transform: rotateY(  0deg) translateZ(16px); 
+  transform: rotateY(0deg) translateZ(16px);
   cursor: pointer;
   opacity: 1;
   transition: .3s ease-in-out;
 }
-.cube__face--front:hover  {
+
+.cube__face--front:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.cube__face--right  { 
+.cube__face--right {
   background-color: rgba(0, 0, 0, 0.8);
-  transform: rotateY( 90deg) translateZ(16px); 
+  transform: rotateY(90deg) translateZ(16px);
 }
-.cube__face--back   { 
+
+.cube__face--back {
   background-color: rgba(0, 0, 0, 0.8);
-  transform: rotateY(180deg) translateZ(16px); 
+  transform: rotateY(180deg) translateZ(16px);
 }
-.cube__face--left   { 
+
+.cube__face--left {
   background: rgb(255, 255, 255);
-  transform: rotateY(-90deg) translateZ(16px); 
+  transform: rotateY(-90deg) translateZ(16px);
   cursor: pointer;
   opacity: 1;
   transition: .3s ease-in-out;
 }
-.cube__face--left:hover  {
+
+.cube__face--left:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.cube__face--top    { 
+.cube__face--top {
   background: rgb(49, 49, 49);
-  transform: rotateX( 90deg) translateZ(16px); 
+  transform: rotateX(90deg) translateZ(16px);
   cursor: pointer;
   opacity: 1;
   transition: .3s ease-in-out;
 }
-.cube__face--top:hover  {
+
+.cube__face--top:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.cube__face--bottom { 
+.cube__face--bottom {
   background-color: rgba(0, 0, 0, 0.8);
   transform: rotateX(-90deg) translateZ(16px);
 }
 
 
-.cube { transform: rotateX(-30deg) rotateY(45deg) }
+.cube {
+  transform: rotateX(-30deg) rotateY(45deg)
+}
 
 /* csv */
-.csv p{
+.csv p {
   margin: 0;
   margin-bottom: 10px;
 }
@@ -557,14 +598,15 @@ a{
   cursor: pointer;
 }
 
-#file-chosen{
+#file-chosen {
   margin-left: 0.3rem;
   font-family: sans-serif;
 }
+
 /* csv */
 
 /* api */
-.api .upload button{
+.api .upload button {
   background-color: white;
   padding: 5px 20px;
   border: none;
@@ -572,10 +614,20 @@ a{
   font-size: 15px;
   float: right;
   margin: 5px;
+  cursor: pointer;
+  border: 1px solid white;
+  transition: .3s ease-in-out;
 }
+
+.api .upload button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: 1px solid white;
+}
+
 /* api */
 
-.range{
+.range {
   position: absolute;
   top: 145px;
   right: -32px;
@@ -583,19 +635,25 @@ a{
   cursor: pointer;
 }
 
+.empty-result {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px 0 20px 0;
+}
+
 /********** Range Input Styles **********/
 /*Range Reset*/
 input[type="range"] {
   -webkit-appearance: none;
-   appearance: none;
-   background: transparent;
-   cursor: pointer;
-   width: 10rem;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 10rem;
 }
 
 /* Removes default focus */
 input[type="range"]:focus {
- outline: none;
+  outline: none;
 }
 
 /***** Chrome, Safari, Opera and Edge Chromium styles *****/
@@ -608,10 +666,12 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 /* slider thumb */
 input[type="range"]::-webkit-slider-thumb {
- -webkit-appearance: none; /* Override default look */
+  -webkit-appearance: none;
+  /* Override default look */
   appearance: none;
   border-radius: 50%;
-  margin-top: -7px; /* Centers thumb on the track */
+  margin-top: -7px;
+  /* Centers thumb on the track */
 
   /*custom styles*/
   background-color: rgb(218, 216, 216);
@@ -622,7 +682,7 @@ input[type="range"]::-webkit-slider-thumb {
   transition: .3s ease-in-out;
 }
 
-input[type="range"]:hover::-webkit-slider-thumb {   
+input[type="range"]:hover::-webkit-slider-thumb {
   background-color: rgb(112, 112, 112);
   border: .5px solid white;
   transition: .3s ease-in-out;
@@ -638,8 +698,10 @@ input[type="range"]::-moz-range-track {
 
 /* slider thumb */
 input[type="range"]::-moz-range-thumb {
-  border: none; /*Removes extra border that FF applies*/
-  border-radius: 50px; /*Removes default border-radius that FF applies*/
+  border: none;
+  /*Removes extra border that FF applies*/
+  border-radius: 50px;
+  /*Removes default border-radius that FF applies*/
 
   /*custom styles*/
   background-color: #5cd5eb;
@@ -653,4 +715,302 @@ input[type="range"]:hover::-moz-range-thumb {
   background-color: rgb(112, 112, 112);
   border: .5px solid white;
   transition: .3s ease-in-out;
+}
+
+.logger {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 300px;
+  height: 90px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 10px 10px 20px 10px;
+  color: white;
+}
+
+.logger .title {
+  font-weight: bold;
+}
+
+.logger .logMsg {
+  font-size: 10px;
+  margin-bottom: 5px;
+  height: 70px;
+  overflow: scroll;
+}
+
+.logger .logDetail {
+  margin: 15px 0;
+}
+
+.logger .logDetail h3 {
+  margin: 0px;
+  margin-bottom: 5px;
+}
+
+.logger .logDetail .logTime {
+  padding: 0 10px;
+  font-size: 10px;
+}
+
+.logger .logDetail .logTime p {
+  margin: 3px;
+}
+
+
+.sub {
+  width: 300px;
+  color: white;
+  padding: 10px;
+}
+
+.sub-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: gray;
+}
+
+.sub-title i {
+  cursor: pointer;
+}
+
+.sub .sub-container {
+  overflow-y: scroll;
+  transition: .3s ease-in-out;
+}
+
+.toggleAdvParam--open {
+  transform: rotate(-90deg);
+  transition: .3s ease-in-out;
+}
+
+.toggleAdvParam--close {
+  transform: rotate(0deg);
+  transition: .3s ease-in-out;
+}
+
+.sub-container--open {
+  max-height: 80px;
+  transition: .3s ease-in-out;
+}
+
+.sub-container--close {
+  max-height: 0px;
+  transition: .3s ease-in-out;
+}
+
+.sub .options {
+  font-size: 12px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: -10px;
+  padding: 0 10px;
+}
+
+.sub .options p {
+  margin-right: 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.sub .options i {
+  cursor: pointer;
+}
+
+.sub-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 0 10px;
+}
+
+.sub-content div i {
+  color: rgb(194, 18, 18);
+  font-size: 20px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.sub-content .sub-content-inputs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.sub-content .sub-content-inputs div {
+  width: 100%;
+  padding-right: 15px;
+}
+
+/* app loader */
+.threeD-container-loader--show {
+  opacity: 1;
+  visibility: visible;
+  transition: .3s ease-in-out;
+}
+
+.threeD-container-loader--hide {
+  opacity: 0;
+  visibility: hidden;
+  transition: .3s ease-in-out;
+}
+
+.threeD-container-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  font-weight: bolder;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(59, 59, 59, .4);
+  backdrop-filter: blur(5px);
+  z-index: 3;
+}
+
+.threeD-container-loader .loader-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dot-flashing {
+  position: relative;
+  margin: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: .5s;
+}
+
+.dot-flashing::before,
+.dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: #9880ff;
+  }
+
+  50%,
+  100% {
+    background-color: #ebe6ff;
+  }
+}
+
+/* app loader */
+
+
+/* routes-number */
+
+.routes-number {
+  display: flex;
+  justify-content: space-around;
+  align-items: baseline;
+  margin: 10px;
+  padding: 0 5px 10px 5px;
+}
+
+.routes-number .route-indicator {
+  background-color: white;
+  color: black;
+  border-radius: 2px;
+  font-weight: bold;
+  padding: 1px 20px;
+  cursor: pointer;
+}
+
+/* routes-number */
+
+
+/* pack-hover */
+.pack-hover-perspective {
+  perspective: 1500px;
+}
+
+.pack-hover-container {
+  position: absolute;
+  width: 120px;
+  top: 100px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  color: white;
+  padding: 20px 10px 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  box-shadow: 5px 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pack-hover-container::before {
+  content: attr(data-before);
+  font-size: 12px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  z-index: 10;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-radius: 1.8rem 1.8rem 10rem 4rem;
+  width: 100%;
+  height: 40px;
+  background-color: red;
+}
+
+.pack-hover-content{
+  margin-top: 30px;
+}
+
+.pack-hover-content .item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 5px 0;
+}
+
+.pack-hover-content .item .title {
+  font-weight: bolder;
 }

@@ -1,36 +1,84 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
 import { scale_meter_px, scene } from './configurations.js';
 import { ThreeDContainer } from './ThreeD_container.js';
-import { camera } from '../main.js';
+import { camera, controls, renderer } from '../main.js';
 
 import Pack from './pack';
+import Dragger from './dragAndDrop/dragger.js';
+import DragSurface from './dragAndDrop/dragSurface.js';
 
 const rayCaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-//boxes on click, find the box and change the opacity and fill the update/delete form
-function clickBoxes(event) {
+//function return the pack if he is founded
+//if not return false
+function findPackShower(event) {
+    mouse.x = ((event.clientX - ThreeDContainer.offsetLeft) / (ThreeDContainer.offsetWidth)) * 2 - 1;
+    mouse.y = - ((event.clientY - ThreeDContainer.offsetTop) / (ThreeDContainer.offsetHeight)) * 2 + 1;
 
-    mouse.x = ((event.clientX - ThreeDContainer.offsetLeft) / (window.innerWidth - ThreeDContainer.offsetLeft)) * 2 - 1;
-    mouse.y = - ((event.clientY - ThreeDContainer.offsetTop) / (window.innerHeight - ThreeDContainer.offsetTop)) * 2 + 1;
+    // var rect = renderer.domElement.getBoundingClientRect();
+    // mouse.x = ( ( event.clientX - rect.left ) / ( rect.width - rect.left ) ) * 2 - 1;
+    // mouse.y = - ( ( event.clientY - rect.top ) / ( rect.bottom - rect.top) ) * 2 + 1;
 
     rayCaster.setFromCamera(mouse, camera);
     var found;
     if (scene.getObjectByName("pack_shower")) {
         found = rayCaster.intersectObjects(scene.getObjectByName("pack_shower").children);
-
         if (found.length > 0 && found[0].object.userData.clickable) {
-            let id = found[0].object.userData.id
-            changeTransparencyOfObject(id);
-            fillFormWithData(id);
+            return found;
         }
     }
+
+    return false;
+}
+
+function boxEvent(event) {
+    if (DragSurface.draggerStat)
+        dragBox(event);
+    else
+        clickBoxes(event);
+}
+
+//boxes on click, find the box and change the opacity and fill the update/delete form
+function clickBoxes(event) {
+    console.log("clicked")
+    let found = findPackShower(event);
+    if (found != false) {
+        let obj = found[0].object;
+        let id = obj.userData.id
+        changeTransparencyOfObject(id);
+        fillFormWithData(id);
+    }
+}
+
+function dragBox(event) {
+    console.log("mousePressed")
+    let found = findPackShower(event);
+    if (found != false) {
+        let obj = found[0].object;
+        let id = obj.userData.id;
+        
+        if (obj.userData.dragDrop)
+            new Dragger().start(obj, id);
+    }
+}
+
+//show the detail of the boxes
+function hoverBoxes(event) {
+    let found = findPackShower(event);
+    if (found != false) {
+        let obj = found[0].object;
+        if (obj.userData.hover)
+            document.body.style.cursor = 'pointer';
+    } else
+        document.body.style.cursor = '';
+
 }
 
 //change the transparency of the boxes for better view of the result
 function changeTransparencyOfObject(id) {
     var boxStat;
-
+    console.log("changing")
     scene.traverse((obj) => {
         if ((obj.userData.name === 'Pack' || obj.userData.name == "Line") && obj.userData.id == id) {
             boxStat = obj.userData.actif;
@@ -82,11 +130,18 @@ function fillFormWithData(id) {
     $("#pack_Detail_Lenght").val(pack.l / scale_meter_px);
     $("#pack_Detail_Quantity").val(pack.q);
     $("#pack_Detail_StackingCapacity").val(pack.stackC);
-    $("#pack_Detail_Priority").val(pack.priority);
+    $("#pack_Detail_Priority").val(pack.priority).change();
 
     pack.rotateDirections.forEach(dir => {
         $(`#pack_Detail_${dir}`).prop("checked", true);
     });
+
+    $("#multiple-prio div").remove();
+
+    for (let i = 0; i < pack.subQuantities.length; i++) {
+        let data = pack.subQuantities[i];
+        $("#multiple-prio").append('<div class="sub-content" id="advOptionsPrio' + i + '"><div class="sub-content-inputs"><div><p class="inputLabel">Quantity</p><input type="number" min="1" value="' + data.n + '"class="sub-q input"></div><div><p class="inputLabel">Priority</p><input type="number" min="1" value="' + data.p + '" class="sub-prio input"></div></div><div><i class="fa-solid fa-trash removePrioInput" data="' + i + '"></i></div></div>')
+    }
 
     if (pack.loaded != undefined && pack.unloaded != undefined)
         $("#packStatut").html(" (" + pack.loaded + " / " + (pack.loaded + pack.unloaded) + ") ")
@@ -94,4 +149,4 @@ function fillFormWithData(id) {
 
 
 
-export { clickBoxes }
+export { clickBoxes, hoverBoxes, boxEvent }

@@ -3,21 +3,23 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
 import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/loaders/GLTFLoader.js';
-import { clickBoxes } from './src/events';
+import { boxEvent, hoverBoxes } from './src/events';
 import { scene } from './src/configurations';
-import { ThreeDContainer } from './src/ThreeD_container';
+import { popUp, ThreeDContainer } from './src/ThreeD_container';
+import Logger from './src/logger';
 
-var camera, renderer, controls;
+var camera, renderer, controls, transformControl;
 var truck_wheels, truck_support;
+const loader = new GLTFLoader();
 
 init();
-
 animate();
+appLoader();
 
 function init() {
 
   const fov = 60;
-  const aspect = window.innerWidth / window.innerHeight;
+  const aspect = ThreeDContainer.clientWidth / ThreeDContainer.clientHeight;
   const near = 1.0;
   const far = 10000.0;
 
@@ -30,13 +32,11 @@ function init() {
   //load the sky to the scene
   loadFloor();
   loadSky();
-  loadModels();
-  loadContainer();
   cameraController();
+
   //add light to the scene
   let light = new THREE.DirectionalLight(0xFFFFFF, 0.8);
   light.position.set(120, 1000, -150);
-  // light.target.position.set(0, 0, 0);
   light.castShadow = true;
   light.shadow.bias = -0.001;
   light.shadow.mapSize.width = 4096; // default
@@ -50,18 +50,9 @@ function init() {
   light.shadow.camera.bottom = -1000;
   scene.add(light);
 
-  // scene.add(new THREE.CameraHelper(light.shadow.camera));
-  // scene.add(new THREE.DirectionalLightHelper(light, 500));
-
-  // //add axis to the scene
-  // const axesHelper = new THREE.AxesHelper(300);
-  // scene.add(axesHelper);
-
-  // var boxs = new THREE.Mesh(new THREE.BoxGeometry(100, 100, 100), material)
-
-  // boxs.position.set(100, 100, 100)
-  // scene.add(boxs);
-
+  // add the axis helper to the scene
+  // const axesHelper = new THREE.AxesHelper( 1200 );
+  // scene.add( axesHelper );
 
   //render the scene
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -82,17 +73,18 @@ function init() {
   controls.update();
 
   window.addEventListener('resize', onWindowResize);
-  ThreeDContainer.addEventListener('click', clickBoxes);
+  ThreeDContainer.addEventListener('mousemove', hoverBoxes)
+  ThreeDContainer.addEventListener('pointerdown', boxEvent);
+  if (popUp != null)
+    popUp.addEventListener('mouseenter', onWindowResize);
 
 }
 
 function onWindowResize() {
-
-  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = ThreeDContainer.clientWidth / ThreeDContainer.clientHeight
   camera.updateProjectionMatrix();
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
+  renderer.setSize(ThreeDContainer.clientWidth, ThreeDContainer.clientHeight);
 }
 
 function animate() {
@@ -103,6 +95,61 @@ function animate() {
 
 function render() {
   renderer.render(scene, camera);
+}
+
+//wait loading models to the app
+function modelLoader(url) {
+  return new Promise((resolve, reject) => {
+    loader.load(url, data => resolve(data), null, reject);
+  });
+}
+
+//async function that take care of loading the models into the app
+async function appLoader() {
+  const start = new Date().getTime();
+
+  const lift_truck_model = await modelLoader('models/lift_truck/scene.gltf');
+  const pallet_truck_model = await modelLoader('models/pallet_truck/scene.gltf');
+  const truck_wheels_model = await modelLoader('models/truck/truck-wheels.gltf');
+  const truck_support_model = await modelLoader('models/truck/truck-support.gltf');
+
+  traitModels(lift_truck_model.scene, { x: 300, y: 300, z: 300 }, { x: -250, y: -90, z: 450 }, - Math.PI, true);
+  traitModels(pallet_truck_model.scene, { x: 1 / 2, y: 1 / 2, z: 1 / 2 }, { x: -450, y: -25, z: 700 }, - Math.PI, true);
+  traitModels(truck_wheels_model.scene, { x: 3 / 2, y: 2, z: 3 / 2 }, {}, Math.PI / 2, false);
+  traitModels(truck_support_model.scene, { x: 2, y: 2.4, z: 2 }, {}, Math.PI / 2, false);
+
+  truck_wheels = truck_wheels_model.scene;
+  truck_support = truck_support_model.scene;
+
+  const end = new Date().getTime();
+
+  let logger = new Logger("Chargement des models, styles, ...", (end - start) * Math.pow(10, -3));
+  logger.dispatchMessage();
+
+  // fetchData();
+  $(".threeD-container-loader").toggleClass("threeD-container-loader--show threeD-container-loader--hide")
+
+}
+
+//trait the models by adding scale\position\rotation and shadows 
+function traitModels(model, scale, position, rotation, addToScene) {
+  let holders = model.getObjectByName("holders")
+  if (holders != null || holders != undefined)
+    holders.translateZ(10)
+
+  model.scale.set(scale.x, scale.y, scale.z)
+  model.rotation.y = rotation
+  model.traverse(function (child) {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  if (addToScene) {
+    model.position.set(position.x, position.y, position.z)
+    scene.add(model);
+  }
 }
 
 //load the ground
@@ -198,80 +245,81 @@ function loadSky() {
 }
 
 //load the models
-function loadModels() {
-  new GLTFLoader().load('models/lift_truck/scene.gltf', function (gltf) {
-    const model = gltf.scene;
-    if (model) {
-      let holders = model.getObjectByName("holders");
+// function loadModels() {
+//   new GLTFLoader().load('models/lift_truck/scene.gltf', function (gltf) {
+//     const model = gltf.scene;
+//     if (model) {
+//       let holders = model.getObjectByName("holders");
 
-      holders.translateZ(10)
+//       holders.translateZ(10)
 
-      model.scale.set(300, 300, 300)
-      model.position.set(-250, -90, 450)
-      model.rotation.y = - Math.PI
-      model.traverse(function (child) {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-      scene.add(model);
-    }
-  });
+//       model.scale.set(300, 300, 300)
+//       model.position.set(-250, -90, 450)
+//       model.rotation.y = - Math.PI
+//       model.traverse(function (child) {
+//         if (child.isMesh) {
+//           child.castShadow = true;
+//           child.receiveShadow = true;
+//         }
+//       });
+//       scene.add(model);
+//     }
+//   });
 
-  new GLTFLoader().load('models/pallet_truck/scene.gltf', function (gltf) {
-    const model = gltf.scene;
-    if (model) {
-      model.scale.set(1 / 2, 1 / 2, 1 / 2)
-      model.position.set(-450, -25, 700)
-      model.rotation.y = Math.PI
-      model.traverse(function (child) {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-      scene.add(model);
-    }
-  });
-}
+//   new GLTFLoader().load('models/pallet_truck/scene.gltf', function (gltf) {
+//     const model = gltf.scene;
+//     if (model) {
+//       model.scale.set(1 / 2, 1 / 2, 1 / 2)
+//       model.position.set(-450, -25, 700)
+//       model.rotation.y = Math.PI
+//       model.traverse(function (child) {
+//         if (child.isMesh) {
+//           child.castShadow = true;
+//           child.receiveShadow = true;
+//         }
+//       });
+//       scene.add(model);
+//     }
+//   });
+// }
 
 //load the parts of container to use them everywhere
-function loadContainer() {
-  new GLTFLoader().load('models/truck/truck-wheels.gltf', function (gltf) {
-    const model = gltf.scene;
-    if (model) {
-      model.scale.set(1.5, 2, 1.5)
-      model.rotation.y = Math.PI / 2
-      model.traverse(function (child) {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
+// function loadContainer() {
+//   new GLTFLoader().load('models/truck/truck-wheels.gltf', function (gltf) {
+//     const model = gltf.scene;
+//     if (model) {
+//       model.scale.set(1.5, 2, 1.5)
+//       model.rotation.y = Math.PI / 2
+//       model.traverse(function (child) {
+//         if (child.isMesh) {
+//           child.castShadow = true;
+//           child.receiveShadow = true;
+//         }
+//       });
 
-      truck_wheels = model;
-    }
-  });
+//       truck_wheels = model;
+//     }
+//   });
 
-  new GLTFLoader().load('models/truck/truck-support.gltf', function (gltf) {
-    const model = gltf.scene;
-    if (model) {
-      model.scale.set(2, 2.4, 2)
-      model.rotation.y = Math.PI / 2
-      model.traverse(function (child) {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
+//   new GLTFLoader().load('models/truck/truck-support.gltf', function (gltf) {
+//     const model = gltf.scene;
+//     if (model) {
+//       model.scale.set(2, 2.4, 2)
+//       model.rotation.y = Math.PI / 2
+//       model.traverse(function (child) {
+//         if (child.isMesh) {
+//           child.castShadow = true;
+//           child.receiveShadow = true;
+//         }
+//       });
 
-      truck_support = model;
-    }
-  });
-}
+//       truck_support = model;
+//     }
+//   });
+// }
 
 //control the camera position with animation
+
 function cameraController() {
   $(".cube__face").click(function () {
     let cameraPos = $(this).attr("role");
@@ -314,4 +362,4 @@ function updateScene() {
   $("#result").empty();
 }
 
-export { camera, truck_wheels, truck_support, updateScene }
+export { camera, renderer, controls, transformControl, truck_wheels, truck_support, updateScene }

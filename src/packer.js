@@ -6,7 +6,7 @@ class Packer {
     constructor(algorithm) {
         this.algorithm = algorithm;
         this.packagesLoaded = [];
-        this.openPoints = [];
+        this.openPoints = [{ x: 0, y: 0, z: 0 }];
         this.boxes = [];
     }
 
@@ -18,20 +18,48 @@ class Packer {
 
 
         Pack.allInstances.map((pack) => {
-            for (var i = 0; i < pack.q; i++) {
-                newPack = {
-                    ...pack,
-                    w: pack.rotations[0].w,
-                    h: pack.rotations[0].h,
-                    l: pack.rotations[0].l,
-                    id: pack.id + "-" + i,
-                    parent_id: pack.id
-                };
-                delete newPack.q;
-                packagesToLoad.push(newPack)
+
+            // console.log(pack)
+            if (pack.multiplePrio) {
+                let count = 0;
+                for (let i = 0; i < pack.subQuantities.length; i++) {
+                    let subPrio = pack.subQuantities[i];
+                    console.log(subPrio)
+                    for (let j = 0; j < subPrio.n; j++) {
+                        newPack = {
+                            ...pack,
+                            priority: subPrio.p,
+                            w: pack.rotations[0].w,
+                            h: pack.rotations[0].h,
+                            l: pack.rotations[0].l,
+                            id: pack.id + "-" + count++,
+                            parent_id: pack.id
+                        };
+
+                        delete newPack.q;
+                        packagesToLoad.push(newPack);
+                    }
+                }
+            }
+            else {
+                // console.log(pack)
+                for (var i = 0; i < pack.q; i++) {
+                    newPack = {
+                        ...pack,
+                        w: pack.rotations[0].w,
+                        h: pack.rotations[0].h,
+                        l: pack.rotations[0].l,
+                        id: pack.id + "-" + i,
+                        parent_id: pack.id
+                    };
+
+                    delete newPack.q;
+                    packagesToLoad.push(newPack);
+                }
             }
         });
 
+        console.log(packagesToLoad);
         //group the packages with their priorities
         let prioritesedPackagesToLoad = packagesToLoad.reduce((priorityGroup, pack) => {
             const prio = pack.priority;
@@ -60,12 +88,13 @@ class Packer {
         return [prioritesedPackagesToLoad, priorities];
     }
 
-    canFit(space, pack) {
-        if (pack.w <= space.w && pack.l <= space.l && pack.h <= space.h) return true;
-        return false;
-    }
+    // canFit(space, pack) {
+    //     if (pack.w <= space.w && pack.l <= space.l && pack.h <= space.h) return true;
+    //     return false;
+    // }
 
     //recursive method that runs unltil it find the last element with same id on top of each other
+
     getDownPack(downPack, count, id) {
         if (downPack == -1 || downPack.parent_id != id) return count;
         else {
@@ -246,32 +275,31 @@ class Packer {
             point.x >= packSpace[0].x && point.x <= packSpace[3].x && point.z >= packSpace[0].z && point.z <= packSpace[3].z;
     }
 
-    packTakeToMuchSpace(point, pack) {
-        let tmpOpenPoints = this.openPoints;
+    // packTakeToMuchSpace(point, pack) {
+    //     let tmpOpenPoints = this.openPoints;
 
-        let p = tmpOpenPoints.filter(p => {
-            return p.y == 0 && p.z == 0;
-        });
+    //     let p = tmpOpenPoints.filter(p => {
+    //         return p.y == 0 && p.z == 0;
+    //     });
 
-        p.sort((a, b) => {
-            return b.x - a.x;
-        });
+    //     p.sort((a, b) => {
+    //         return b.x - a.x;
+    //     });
 
-        // console.log(point.x + pack.w, point.x, p[0].x);
-        if (point.x != p[0].x && point.x + pack.w > p[0].x) {
-            // console.log(false)
-            return false;
-        }
+    //     // console.log(point.x + pack.w, point.x, p[0].x);
+    //     if (point.x != p[0].x && point.x + pack.w > p[0].x) {
+    //         // console.log(false)
+    //         return false;
+    //     }
 
-        // console.log(true)
-        return true;
-    }
+    //     // console.log(true)
+    //     return true;
+    // }
 
     okRotation(container, pack) {
         for (let i = 0; i < this.openPoints.length; i++) {
             let point = this.openPoints[i];
             let newPack = { ...pack }
-            // console.log(point)
 
             if (point.y > 0 && point.type == "T" && pack.stackC != -1 && !this.canBeStacked(pack, point)) continue;
 
@@ -311,13 +339,18 @@ class Packer {
                 this.openPoints.splice(i, 1)
         }
 
+
+        // console.log(pack)
         //remove the points dont have acces
+        //that mean the point that i pass on them while positioning the boxes
         let idPointToRemove = [];
         this.openPoints.map((p, index) => {
             if (p.x + 1 >= pack.x && p.x + 1 <= pack.x + pack.w
                 && p.z + 1 >= pack.z && p.z + 1 <= pack.z + pack.l
-                && p.y > 0 && p.y == pack.y
-                && p.pointOwner != pack.id) {
+                // && p.y > 0 
+                && p.y == pack.y
+                && p.pointOwner != pack.id
+            ) {
                 idPointToRemove.push(index);
             }
         });
@@ -326,7 +359,7 @@ class Packer {
             return b - a;
         });
 
-        for (let i = idPointToRemove.length - 1; i >= 0; i--) {
+        for (let i = 0; i < idPointToRemove.length; i++) {
             // console.log(this.openPoints[idPointToRemove[i]])
             this.openPoints.splice(idPointToRemove[i], 1);
         }
@@ -341,8 +374,11 @@ class Packer {
                 let pack2 = point2.pointOwner.split("-")[0];
 
                 //delete the z point on the same axe
-                if (point1.x == point2.x && point1.y == point2.y && pack1 == pack2) {
-                    console.log(point1.y)
+                //check if the points cover the same space
+                //remove only the point that cover the same space
+                //keep the points that have a different surface to cover
+                if (point1.x == point2.x && point1.y == point2.y && point1.type != "S" && pack1 == pack2) {
+                    // console.log(point1.y)
                     let check = this.packagesLoaded.filter(pack => {
                         if (point1.y == 0) {
                             return pack.y == point1.y
@@ -375,25 +411,33 @@ class Packer {
                         }
                     });
 
-                    console.log(pack1, check, check1);
+                    // console.log(pack1, check, check1);
 
                     if (check.length != 0 && check1.length != 0) {
-                        console.log(Math.abs(check[0].x - point1.x), Math.abs(check1[0].x - point2.x), point1.x, point2.x);
-                        if (Math.abs(check[0].x - point1.x) == Math.abs(check1[0].x - point2.x))
+                        // console.log(Math.abs(check[0].x - point1.x), Math.abs(check1[0].x - point2.x), point1.x, point2.x);
+                        if (Math.abs(check[0].x - point1.x) == Math.abs(check1[0].x - point2.x)) {
+                            // console.log(this.openPoints[j])
                             this.openPoints.splice(j, 1);
+                        }
                     }
-                    if (check.length == 0 && check1.length == 0)
+                    if (check.length == 0 && check1.length == 0) {
+                        // console.log(this.openPoints[j])
                         this.openPoints.splice(j, 1);
+                    }
                 }
 
                 //delete the y point on the same axe
                 if (point1.x == point2.x && point1.z == point2.z && pack1 == pack2) {
+                    // console.log(this.openPoints[j])
                     this.openPoints.splice(j, 1);
                 }
 
                 //delete the z point on the same axe
-                if (point1.y == point2.y && point1.z == point2.z && pack1 == pack2) {
-                    this.openPoints.splice(j, 1);
+                if (point1.y == point2.y && point1.z == point2.z && !point1.ignored && pack1 == pack2) {
+                    if (point2.type != "S") {
+                        // console.log(this.openPoints[j])
+                        this.openPoints.splice(j, 1);
+                    }
                 }
             }
         }
@@ -408,9 +452,7 @@ class Packer {
         this.openPoints = this.removeDuplicatesObjectFromArray(this.openPoints);
 
         //sort the points by the closets to the origins
-        this.openPoints.sort((a, b) => {
-            return ((a.x - b.x || a.z - b.z) || a.y - b.y)
-        });
+        this.sortOpenPoints();
 
         //remove non eligible points
         this.removeNonWorkingOpenPoints(container);
@@ -426,20 +468,78 @@ class Packer {
         )
     }
 
-    getDifference(array1, array2) {
-        return array1.filter(obj1 => {
-            return !array2.some(obj2 => {
-                return obj1.id === obj2.parent_id;
-            });
-        });
-    }
+    // getDifference(array1, array2) {
+    //     return array1.filter(obj1 => {
+    //         return !array2.some(obj2 => {
+    //             return obj1.id === obj2.parent_id;
+    //         });
+    //     });
+    // }
+
+    //remove the point to give the ability to the next priority to be distributed in the container
+    //?????????????????????? need to be fixed ?????????????????????
 
     removeOpenPointForNextPriority() {
-        for (let i = this.openPoints.length - 1; i >= 0; i--) {
-            let point = this.openPoints[i];
-            if (point.type == "T" )
-                this.openPoints.splice(i, 1)
+        let topPoints = [];
+
+        this.openPoints.map((p, i) => {
+            if (p.type == "T")
+                topPoints.push({
+                    data: p,
+                    index: i
+                });
+        })
+
+        if (topPoints.length > 0) {
+            topPoints.sort((a, b) => {
+                return b.data.y - a.data.y;
+            });
+
+            // console.log(topPoints)
+
+            //get the max height
+            let maxHeight = topPoints[0].data.y;
+
+            topPoints.sort((a, b) => {
+                return b.index - a.index;
+            });
+
+            for (let i = topPoints.length - 1; i >= 0; i--) {
+                let point = topPoints[i]
+                console.log(point, maxHeight)
+                if (point.data.y == maxHeight) {
+                    console.log(this.openPoints[point.index])
+                    this.openPoints.splice(point.index, 1)
+                }
+            }
         }
+    }
+
+    removePointForNextPriority(priorities, priorityIndex) {
+        let prevPrio = priorities[priorityIndex - 1] || priorities[0];
+        let thisPrio = priorities[priorityIndex];
+
+        console.log(priorities[priorityIndex], prevPrio)
+        let nextPrioPoint = this.openPoints.filter(p => {
+            // return p.prio <= thisPrio && p.type != "T";
+            return p.prio >= prevPrio && p.prio <= thisPrio && p.type != "T";
+        });
+
+        console.log(nextPrioPoint)
+        // let lastTopPoint = this.openPoints.filter(p => {
+        //     return p.prio == thisPrio && p.type == "T";
+        // });
+
+        // let newOpenPoint = [...nextPrioPoint, ...lastTopPoint];
+        let newOpenPoint = [...nextPrioPoint];
+
+        this.openPoints = newOpenPoint;
+    }
+
+    removePointsNextPriority(){
+        this.openPoints = this.openPoints.filter( p => {
+            return p.y == 0
+        });
     }
 
     //get the indexes of the packs that meet certain condition
@@ -447,7 +547,7 @@ class Packer {
         let pointAndIndex = [];
 
         this.openPoints.map((p, index) => {
-            if (parseInt(p.pointOwner.split("-")[0]) == packGroup.parent_id && p.type == "T") {
+            if (parseInt(p.type != undefined && p.type == "T" && p.pointOwner.split("-")[0]) == packGroup.parent_id) {
                 pointAndIndex.push({
                     index: index,
                     data: p
@@ -455,76 +555,83 @@ class Packer {
             }
         });
 
-        pointAndIndex.sort((a, b) => {
-            return a.index - b.index;
-        });
-
         return pointAndIndex;
     }
 
-    //remove the diagonal points that
+    //remove the diagonal points on top of a loaded pack
     removeDiagonalPoints(packGroup) {
 
         let pointAndIndex = this.getIndexes(packGroup);
+        let remove = [];
+
         if (pointAndIndex.length >= 2) {
 
             for (let i = 0; i < pointAndIndex.length; i++) {
                 let p = pointAndIndex[i];
-                console.log(pointAndIndex);
 
                 for (let j = i + 1; j < pointAndIndex.length; j++) {
                     let p1 = pointAndIndex[j];
+                    let cdt =
+                        Math.abs(p1.data.z - p.data.z) % packGroup.l == 0
+                        && Math.abs(p1.data.x - p.data.x) % packGroup.w == 0
+                        && p.data.y == p1.data.y
+                        && p1.data.z > p.data.z
+                        && p1.data.x > p.data.x;
 
-                    if (Math.abs(p1.data.z - p.data.z) % 2 == 0) {
-                        this.openPoints.splice(p1.index, 1);
-                        pointAndIndex = this.getIndexes(packGroup);
-                    }
+                    if (cdt)
+                        remove.push(p1.index);
                 }
             }
 
-        }
+            let uniqIds = [...new Set(remove)];
+            uniqIds.sort((a, b) => {
+                return b - a;
+            })
 
+            uniqIds.map(id => {
+                // console.log(this.openPoints[id])
+                this.openPoints.splice(id, 1);
+            });
+        }
     }
 
+    //sort the open points
+    sortOpenPoints() {
+        this.openPoints.sort((a, b) => {
+            return ((a.x - b.x || a.z - b.z) || a.y - b.y);
+        });
+    }
+
+    //?????????????????????????????????????
+    //take of the part of fitting the first box
+    //make only one logic to treat all the packages
+    //trait the case if the pack is bigger than the container then it should be ignored
     solve(container, packages, priorities) {
 
-        let packGroup = Object.keys(packages)[0][0];
-
-        for (let groupIndex = 0; groupIndex < priorities.length; groupIndex++) {
-            let packs = packages[priorities[groupIndex]];
+        for (let priorityIndex = 0; priorityIndex < priorities.length; priorityIndex++) {
+            let packs = packages[priorities[priorityIndex]];
 
             for (let packIndex = 0; packIndex < packs.length; packIndex++) {
 
                 let pack = packs[packIndex];
-                if (groupIndex == 0 && packIndex == 0) {
-                    if (this.canFit(container, pack)) {
-                        this.createPack(pack, { x: 0, y: 0, z: 0 });
-                    }
+                let space = this.okRotation(container, pack);
+
+                if (space !== false) {
+                    this.createPack(space[2], space[0]);
+                    this.refreshOpenPoints(space[1], container);
+                    this.openPoints.push(...this.createSidePoints());
+                    this.sortOpenPoints();
+
+                    if (this.packagesLoaded.length >= 2
+                        && this.packagesLoaded[this.packagesLoaded.length - 1].parent_id != this.packagesLoaded[this.packagesLoaded.length - 2].parent_id)
+                        this.removeDiagonalPoints(this.packagesLoaded[this.packagesLoaded.length - 2]);
                 }
-                else {
-                    // let exist = this.packagesLoaded.filter(p => p.id == pack.id);
-                    // if (exist.length > 0) continue;
-                    // else {
-                    let space = this.okRotation(container, pack);
-                    if (space !== false) {
-                        this.createPack(space[2], space[0]);
-                        this.refreshOpenPoints(space[1], container);
-
-                        if (packGroup.parent_id != pack.parent_id)
-                            this.removeDiagonalPoints(packGroup);
-
-                        //change the id of the pack after traitement
-                        packGroup = pack;
-                    }
-                    // }
-                }
-
             }
 
+            this.removePointsNextPriority();
             // this.removeOpenPointForNextPriority();
+            // this.removePointForNextPriority(priorities, priorityIndex);
         }
-
-        this.removeDiagonalPoints(packGroup);
 
         console.log("packagesLoaded => ");
         console.log(this.packagesLoaded)
@@ -606,7 +713,162 @@ class Packer {
         return pack[0];
     }
 
-    //create the open point ???????????????????? this function need to be traited
+    //create the side point when some spaces cant anything be fit inside of it
+    //optimise the space inside the container by creating other point to ignore
+    //the spaces that cant hold boxes inside it
+    createSidePoints() {
+        let pack = this.packagesLoaded[this.packagesLoaded.length - 1];
+
+        let sideOpenPoint = [];
+
+        let sidePoint = this.openPoints.filter(point => {
+            return point.y == pack.y
+                && point.x < pack.x + pack.w
+                && point.pointOwner != pack.id
+                && point.type != "S"
+                && !point.ignored;
+        });
+
+        sidePoint.sort((a, b) => {
+            return a.z - b.z;
+        });
+
+        // console.log(pack, sidePoint);
+
+        var index = null;
+        if (sidePoint.length > 0) {
+
+            if (pack.z + pack.l - sidePoint[0].z > 0) {
+                let p1 = pack.openPoint.F;
+                let p2 = sidePoint[0];
+
+                let isTherePack = this.packagesLoaded.filter(p => {
+                    return p.x > p1.x && p.x <= p2.x && p.z > p1.z && p.z <= p2.z && p.y == p1.y;
+                });
+
+                // console.log(isTherePack);
+                if (isTherePack.length == 0) {
+                    let tmpSidePoint = {
+                        pointOwner: pack.id,
+                        x: pack.x + pack.w,
+                        y: pack.y,
+                        z: sidePoint[0].z,
+                        type: "S",
+                        ignored: false,
+                        prio: pack.priority
+                    }
+
+                    let check = this.packagesLoaded.filter(pack => {
+                        if (tmpSidePoint.y > 0) {
+                            return pack.y + pack.h == tmpSidePoint.y
+                                && pack.x <= tmpSidePoint.x + 1
+                                && pack.x + pack.w >= tmpSidePoint.x + 1
+                                && pack.z <= tmpSidePoint.z + 1
+                                && pack.z + pack.l >= tmpSidePoint.z + 1;
+                        }
+                    });
+
+                    if (pack.y == 0) {
+                        let isPointInPack = this.packagesLoaded.filter(p => {
+                            return p.x <= tmpSidePoint.x
+                                && p.x + p.w >= tmpSidePoint.x
+                                && p.z <= tmpSidePoint.z
+                                && p.z + p.l >= tmpSidePoint.z;
+                        });
+
+                        if (tmpSidePoint.z == 0 || isPointInPack.length != 0) {
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == sidePoint[0].x && p.y == pack.y && p.z == sidePoint[0].z;
+                            });
+                        }
+
+                    }
+                    else {
+                        if (check.length > 0) {
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == sidePoint[0].x && p.y == pack.y && p.z == sidePoint[0].z;
+                            });
+                        }
+                    }
+
+
+                }
+            }
+
+            if (pack.z + pack.l - sidePoint[0].z < 0) {
+                let p1 = pack.openPoint.F;
+                let p2 = sidePoint[0];
+
+                let isTherePack = this.packagesLoaded.filter(p => {
+                    return p.x >= p2.x && p.x <= p1.x && p.z + 1 > p1.z && p.z + 1 <= p2.z && p.y == p1.y;
+                });
+
+                // console.log(isTherePack);
+                if (isTherePack.length == 0) {
+                    let tmpSidePoint = {
+                        pointOwner: pack.id,
+                        x: sidePoint[0].x,
+                        y: pack.y,
+                        z: pack.z + pack.l,
+                        type: "S",
+                        ignored: false,
+                        prio: pack.priority
+                    };
+
+                    let check = this.packagesLoaded.filter(pack => {
+                        if (tmpSidePoint.y > 0) {
+                            return pack.y + pack.h == tmpSidePoint.y
+                                && pack.x <= tmpSidePoint.x + 1
+                                && pack.x + pack.w >= tmpSidePoint.x + 1
+                                && pack.z <= tmpSidePoint.z + 1
+                                && pack.z + pack.l >= tmpSidePoint.z + 1;
+                        }
+                    });
+
+                    if (pack.y == 0) {
+                        let isPointInPack = this.packagesLoaded.filter(p => {
+                            return p.x <= tmpSidePoint.x
+                                && p.x + p.w >= tmpSidePoint.x
+                                && p.z <= tmpSidePoint.z
+                                && p.z + p.l >= tmpSidePoint.z;
+                        });
+
+                        if (tmpSidePoint.z == 0 || isPointInPack.length != 0) {
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == pack.x && p.y == pack.y && p.z == pack.z + pack.l;
+                            });
+                        }
+                    }
+
+                    else {
+                        if (check.length > 0) {
+                            sideOpenPoint.push(tmpSidePoint);
+
+                            index = this.openPoints.findIndex(p => {
+                                return p.x == pack.x && p.y == pack.y && p.z == pack.z + pack.l;
+                            });
+                        }
+                    }
+
+
+                }
+            }
+
+            if (index != -1 && index != null) {
+                this.openPoints[index].ignored = true;
+            }
+        }
+
+        return sideOpenPoint;
+    }
+
+    //create the open point
     createOpenPoints(coords, pack) {
 
         let validOpenPoint = [
@@ -615,7 +877,9 @@ class Packer {
                 x: coords.x,
                 y: coords.y + pack.h,
                 z: coords.z,
-                type: "T"
+                type: "T",
+                ignored: false,
+                prio: pack.priority
             },
         ];
 
@@ -625,15 +889,18 @@ class Packer {
                 x: coords.x,
                 y: coords.y,
                 z: coords.z + pack.l,
-                type: "R"
-
+                type: "R",
+                ignored: false,
+                prio: pack.priority
             },
             {
                 pointOwner: pack.id,
                 x: coords.x + pack.w,
                 y: coords.y,
                 z: coords.z,
-                type: "F"
+                type: "F",
+                ignored: false,
+                prio: pack.priority
             }
         ];
 
@@ -668,13 +935,19 @@ class Packer {
                         if (this.isPointContainedInSpace(packSpace, testPoint, false)) {
                             let loadedPackInSpace = this.packagesLoaded.filter(p => {
                                 // console.log(p.id, point);
-                                return p.x <= point.x
-                                    && p.x + p.w > point.x
-                                    && p.z <= point.z
-                                    && p.z + p.l > point.z
+                                return p.x <= point.x + 1
+                                    && p.x + p.w > point.x + 1
+                                    && p.z <= point.z + 1
+                                    && p.z + p.l > point.z + 1
                                     && p.y == coords.y
                                     && p.id != point.pointOwner
                             });
+
+                            let dis;
+                            if (point.type == "R") dis = packSpace[3].z - point.z;
+                            if (point.type == "F") dis = packSpace[3].x - point.x;
+
+                            // console.log(point.type, pack, pack.id, dis);
 
                             // console.log(loadedPackInSpace);
                             if (loadedPackInSpace.length == 0) {
@@ -701,7 +974,6 @@ class Packer {
 
         // console.log(validOpenPoint)
         return validOpenPoint;
-
     }
 
     //create the pack and added it to the scene

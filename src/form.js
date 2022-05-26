@@ -4,6 +4,9 @@ import Pack from "./pack.js";
 import Packer from "./packer.js";
 import { updateScene } from '../main.js';
 import { loadPacks, loadResult } from "./result_drawer.js";
+import Logger from "./logger.js";
+import Route from "./routes.js";
+import DragSurface from "./dragAndDrop/dragSurface.js";
 
 $(document).ready(function () {
 
@@ -15,7 +18,74 @@ $(document).ready(function () {
         $("#containerWidth").val(container.w)
         $("#containerHeight").val(container.h)
         $("#containerLenght").val(container.l)
+        $("#containerUnloading").val(container.unloading)
     }
+
+    //routes number incerement and decrement
+    $("#routeIncrement").click(function () {
+        let currentVal = parseInt($("#routesNumber").val());
+        $("#routesNumber").val(currentVal + 1);
+        addRouteInputs(currentVal + 1);
+    });
+
+    $("#routeDecrement").click(function () {
+        let currentVal = parseInt($("#routesNumber").val());
+        if (currentVal > 1) {
+            $("#routesNumber").val(currentVal - 1);
+            $('#routeInputs .inputs').last().remove();
+        }
+    });
+
+    //add/remove inputs from list of routes
+    function addRouteInputs() {
+        $("#routeInputs").append(`
+            <div class="inputs">
+                <div>
+                    <p class="inputLabel">From</p>
+                    <input type="text" class="input routeFrom" required>
+                </div>
+                <div>
+                    <p class="inputLabel">To</p>
+                    <input type="text" class="input routeTo" required>
+                </div>
+                <div>
+                    <p class="inputLabel">Type</p>
+                    <select class="input routeType" required>
+                        <option value="dechargement">D</option>
+                        <option value="chargement">C</option>
+                        <option value="dechargement">D et C</option>
+                    </select>
+                </div>
+            </div>`)
+    }
+
+    //submit the routes form to add the route
+    $("#routesForm").submit(function (event) {
+        event.preventDefault();
+
+        var routeDetails = {};
+        var route;
+
+        routeDetails.routesNumber = $("#routesNumber").val();
+        routeDetails.from = $('.routeFrom').map(function () { return $(this).val(); }).get();
+        routeDetails.to = $('.routeTo').map(function () { return $(this).val(); }).get();
+        routeDetails.type = $('.routeType').map(function () { return $(this).val(); }).get();
+
+        routeDetails.routes = [];
+
+        for (let i = 0; i < routeDetails.routesNumber; i++) {
+            let r = {
+                id: i + 1,
+                from: routeDetails.from[i],
+                to: routeDetails.to[i],
+                type: routeDetails.type[i]
+            }
+            routeDetails.routes.push(r);
+        }
+
+        route = new Route(routeDetails.routesNumber, routeDetails.routes)
+        route.add();
+    });
 
     //submit the container form to create the container
     $("#containerForm").submit(function (event) {
@@ -27,20 +97,15 @@ $(document).ready(function () {
         containerDimensions.w = $("#containerWidth").val();
         containerDimensions.h = $("#containerHeight").val();
         containerDimensions.l = $("#containerLenght").val();
-        containerDimensions.weight = 0;
+        containerDimensions.capacity = 0;
 
         //remove all the truck and the packs added
         updateScene();
 
         //create the container
-        new Container(containerDimensions.w, containerDimensions.h, containerDimensions.l, 0);
+        new Container(containerDimensions.w, containerDimensions.h, containerDimensions.l, containerDimensions.capacity);
+        new DragSurface(containerDimensions.w, containerDimensions.h, containerDimensions.l);
         containerCreated = true;
-
-        var container = JSON.parse(localStorage.getItem("container"));
-        if (container !== null) {
-            var packDim = container.w + " , " + container.h + " , " + container.l;
-            $("#containerDetails").html('<span>' + packDim + '</span>');
-        }
     });
 
     //submit the packages form to add the packs
@@ -73,7 +138,7 @@ $(document).ready(function () {
             packDetails.r.push("front-side")
         }
 
-        pack = new Pack(packDetails.label, packDetails.w, packDetails.h, packDetails.l, packDetails.q, packDetails.stack, packDetails.r, packDetails.priority)
+        pack = new Pack(packDetails.label, packDetails.w, packDetails.h, packDetails.l, packDetails.q, packDetails.stack, packDetails.r, packDetails.priority, [])
         pack.add()
 
         var packDim = packDetails.w + " , " + packDetails.h + " , " + packDetails.l + " ( " + packDetails.q + " ) ";
@@ -93,14 +158,18 @@ $(document).ready(function () {
         var packer = new Packer("cub");
         var packagesToLoad = packer.initialisePackagesToLoad();
 
-        console.log("solving");
+        let logger = new Logger("Loading", 0.01);
+        logger.dispatchMessage();
+
         worker.postMessage([Container.instances, packagesToLoad]);
 
         worker.onmessage = (msg) => {
-            console.log("solved")
-            loadPacks(msg.data[0], msg.data[1]);
-            loadResult(Pack.allInstances, msg.data[1]);
-            $("#numberBox").val(msg.data[1].length)
+            loadPacks(msg.data.packer[0], msg.data.packer[1]);
+            loadResult(Pack.allInstances, msg.data.packer[1]);
+            $("#numberBox").val(msg.data.packer[1].length);
+
+            let logger = new Logger("Loaded", msg.data.executionTime);
+            logger.dispatchMessage();
         }
     })
 
@@ -130,11 +199,41 @@ $(document).ready(function () {
             packDetails.r.push("front-side")
         }
 
+        //add/update the list of of multiple priorities
+        let quantities = getMultipleInputValues(".sub-q");
+        let priorities = getMultipleInputValues(".sub-prio");
+        let subQuantities = [];
+
+        for (let i = 0; i < quantities.length; i++) {
+            let q = quantities[i];
+            let p = priorities[i];
+
+            subQuantities.push({
+                n: q,
+                p: p
+            });
+        }
+
+        packDetails.subQuantities = subQuantities;
+
         Pack.update(packDetails, packDetails.id);
         Pack.removeBoxesFromTheScene();
         Pack.loadPacks();
 
     });
+
+    //get the array of values inserted by the user
+    function getMultipleInputValues(className) {
+        let inputs = $(className);
+        let values = [];
+
+        for (let i = 0; i < inputs.length; i++) {
+            let input = inputs[i];
+            values.push(parseInt(input.value));
+        }
+
+        return values;
+    }
 
     //click event on the delete button to remove a specific pack
     $("#deletePack").click(function (event) {
@@ -242,16 +341,19 @@ $(document).ready(function () {
         let container = data.container;
         let packages = data.colis;
 
-        new Container(container.w, container.h, container.l, container.capacity);
+        new Container(container.w, container.h, container.l, container.capacity, container.unloading);
         containerCreated = true;
 
         packages.map(pack => {
             var pack = new Pack(pack.label, pack.w, pack.h, pack.l, pack.q, pack.stackingCapacity, pack.rotations, pack.priority);
             pack.add();
 
-            var packDim = pack.w + " , " + pack.h + " , " + pack.l + " ( " + pack.q + " ) ";
-            $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
+            // var packDim = pack.w + " , " + pack.h + " , " + pack.l + " ( " + pack.q + " ) ";
+            // $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
         });
+
+        let logger = new Logger("Load Data", 0.01);
+        logger.dispatchMessage();
     }
 
     //fill the form with random numbers to make the things fast and easy

@@ -1,6 +1,7 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
 import { scale_meter_px, scene } from "./configurations.js";
 import { truck_wheels, truck_support } from "../main.js";
+import Logger from './logger.js';
 
 class Container {
 
@@ -79,8 +80,19 @@ class Container {
         //load the parts of the truck
         this.loadTruck(this.w, this.l, container)
 
+        //load the container data into the UI
+        var packDim = this.w / scale_meter_px + " , " + this.h / scale_meter_px + " , " + this.l / scale_meter_px;
+        $("#containerDetails").html('<span>' + packDim + '</span>');
+        $("#containerWidth").val(this.w / scale_meter_px)
+        $("#containerHeight").val(this.h / scale_meter_px)
+        $("#containerLenght").val(this.l / scale_meter_px)
+        $("#containerUnloading").val(this.unloading)
+
         //update the container size to the localstorage
         localStorage.setItem("container", JSON.stringify(this.getContainerLocalStorage));
+
+        let logger = new Logger("Loading container", 0.01);
+        logger.dispatchMessage();
     }
 
     loadTruck(width, lenght, container) {
