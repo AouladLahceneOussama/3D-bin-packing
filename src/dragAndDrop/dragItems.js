@@ -4,6 +4,7 @@ import { camera, renderer, controls, transformControl } from '../../main.js';
 import Pack from "../pack";
 import Dragger from './dragger';
 import DragSurface from './dragSurface';
+import DragDropLogger from './dragDropLogger';
 
 class DragItem {
 
@@ -23,6 +24,7 @@ class DragItem {
             position: this.object.position,
         }
 
+        console.log(this.object.position)
         DragItem.allDraggableItems.push(this.getItem);
     }
 
@@ -37,20 +39,8 @@ class DragItem {
     }
 
     //find the best position where to insert the box in the container
-    bestPosition(packDetails) {
-        let dragSurface = DragSurface.dragSurface;
-        if (Dragger.openPoints.length == 0) return { x: 0, y: 0, z: 0 };
-        for (let i = 0; i < Dragger.openPoints.length; i++) {
-            let p = Dragger.openPoints[i];
-
-            if (
-                p.z + packDetails.l <= dragSurface.lenght
-                && p.y + packDetails.h <= dragSurface.height
-                && p.x + packDetails.w <= dragSurface.width
-            )
-                return p
-        }
-
+    bestPosition() {
+        return Dragger.specificOpenPoints[0];
     }
 
     //crate the dragged box when cliking a new box
@@ -58,21 +48,22 @@ class DragItem {
     //if true add the item if not alert
     createDragItem(transformControl) {
         let check = this.checkQuantityItem(this.parent_id, this.q);
+        console.log(check);
+        new DragDropLogger(this.packDetails, check == -1 ? this.q : check, check == -1 ? "All loaded" : Dragger.specificOpenPoints.length > 0 ? "On loading" : "No left space in the container").dispatchMessage()
 
-        if (check != -1) {
-            let packDetails = Pack.allInstances.filter(p => {
-                return p.id == this.parent_id;
-            })[0];
-
+        if (check != -1 && Dragger.specificOpenPoints.length > 0) {
             //create the group of box and border
             let boxAndBorder = new THREE.Group();
-            boxAndBorder.name = "Box_Border_" + this.parent_id;
+            boxAndBorder.name = "Box_Border_" + this.parent_id + "-" + check;
             boxAndBorder.userData.parent_id = this.parent_id;
             boxAndBorder.userData.id = this.parent_id + "-" + check;
+            boxAndBorder.userData.name = "Box_border";
+            console.log(Dragger.specificOpenPoints)
 
+            let dimensions = Dragger.specificOpenPoints[0].rotations[0];
             //crete the box
-            let normalMateriel = new THREE.MeshLambertMaterial({ color: packDetails.color * 0xFF0FFF, side: THREE.DoubleSide })
-            let boxGeometry = new THREE.BoxGeometry(packDetails.w, packDetails.h, packDetails.l);
+            let normalMateriel = new THREE.MeshLambertMaterial({ color: this.packDetails.color * 0xFF0FFF, side: THREE.DoubleSide })
+            let boxGeometry = new THREE.BoxGeometry(dimensions.w, dimensions.h, dimensions.l);
             let box = new THREE.Mesh(boxGeometry, normalMateriel);
             box.userData.parent_id = this.parent_id;
             box.userData.id = this.parent_id + "-" + check;
@@ -83,17 +74,14 @@ class DragItem {
             line.name = "Line_" + this.parent_id;
             line.userData.id = this.parent_id;
             line.userData.name = "Line";
-            // line.translateX(packDetails.w / 2);
-            // line.translateY(packDetails.h / 2);
-            // line.translateZ(packDetails.l / 2);
 
             //position the group
-            let pos = this.bestPosition(packDetails)
+            let pos = this.bestPosition(dimensions)
             this.stat.position = pos;
 
             boxAndBorder.position.set(pos.x, pos.y, pos.z);
-            boxGeometry.translate(packDetails.w / 2, packDetails.h / 2, packDetails.l / 2);
-            edges.translate(packDetails.w / 2, packDetails.h / 2, packDetails.l / 2);
+            boxGeometry.translate(dimensions.w / 2, dimensions.h / 2, dimensions.l / 2);
+            edges.translate(dimensions.w / 2, dimensions.h / 2, dimensions.l / 2);
 
             boxAndBorder.add(box);
             boxAndBorder.add(line);
@@ -109,6 +97,7 @@ class DragItem {
 
     //check if still the quantity - draggedItem > 0
     checkQuantityItem(parent_id, quantity) {
+        console.log(Dragger.loadedPack)
         let items = Dragger.loadedPack.filter(item => {
             return item.box.userData.parent_id == parent_id
         });

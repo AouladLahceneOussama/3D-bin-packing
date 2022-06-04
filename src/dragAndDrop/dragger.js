@@ -2,11 +2,22 @@ import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threej
 import { TransformControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/TransformControls.js';
 import { camera, renderer, controls } from '../../main.js';
 import { scene } from '../configurations.js';
+import DragDropLogger from './dragDropLogger.js';
 import DragItem from "./dragItems";
 import DragSurface from "./dragSurface";
+import { changeOpacityUnvailableRotations, currentRotationUpdate } from "./dragDropMenu"
 
 class Dragger {
-
+    // this variable for saving the steps done by the user
+    // move forward and backward on the steps done
+    static steps = [{
+        stepNumber: 0,
+        loadedPacks: [],
+        openPoint: [{ x: 0, y: 0, z: 0 }]
+    }];
+    static currentStep = 0;
+    
+    static allLoadedPacks = [];
     static loadedPack = [];
     static openPoints = [{ x: 0, y: 0, z: 0 }];
     static specificOpenPoints = [];
@@ -14,7 +25,7 @@ class Dragger {
     static currentPos = null;
     static currentRotation = { face: "base", yAxis: 0 }
     static item = {}
-    static lastKeyPressed;
+    static mouseOnAction = false;
 
     constructor() {
         this.transformControl;
@@ -34,16 +45,34 @@ class Dragger {
         });
 
         // create new box i
-        let dragItem = new DragItem(obj, parent_id);
-        Dragger.item = dragItem.getItem;
-        let box = dragItem.createDragItem(this.transformControl);
+        console.log(Dragger.item)
+        if (Object.keys(Dragger.item).length == 0) {
+            let dragItem = new DragItem(obj, parent_id);
+            Dragger.item = dragItem.getItem;
+            Dragger.filterOpenPointByPackage();
+            let box = dragItem.createDragItem(this.transformControl);
 
-        if (box != false) {
-            this.dragging(box);
-            Dragger.specificOpenPoints = [];
-            Dragger.currentPos = Dragger.item.stat.position;
-            Dragger.filterOpenPointByPackage()
+            if (box != false) {
+                Dragger.currentPos = Dragger.item.stat.position;
+                this.dragging(box);
+            }
+            else {
+                Dragger.item = {}
+            }
+        } else {
+            console.log("Please confirm the position of the current dragged pack [press enter]")
         }
+
+    }
+
+    static getNbLoadedPacksById(id, quantity) {
+        console.log(id, quantity)
+        let items = Dragger.loadedPack.filter(item => {
+            return item.box.userData.parent_id == id
+        });
+
+        if (Dragger.loadedPack.length == 0) return 0;
+        return quantity - items.length >= 0 ? items.length : -1;
     }
 
     // when dragging the item
@@ -73,12 +102,180 @@ class Dragger {
             }
         }
 
+        //create a 2d space on top of boxes
+        function create2dSpace(coords) {
+            //find the boxes that will create our 2d space
+            let packs = Dragger.loadedPack.filter(p => {
+                let upperPoint = coords.y > 0 ? p.y + p.h : p.y;
+                // console.log(upperPoint)
+                // let upperPoint = p.y;
+                return upperPoint == coords.y
+            });
+
+            // console.log(packs);
+
+            //fill the space with the coordinates of each box
+            let space = [];
+            packs.forEach(p => {
+                if (space[p.id] == null) space[p.id] = [];
+                space[p.id].push(
+                    {
+                        x: p.x,
+                        z: p.z
+                    },
+                    {
+                        x: p.x + p.w,
+                        z: p.z
+                    },
+                    {
+                        x: p.x,
+                        z: p.z + p.l
+                    },
+                    {
+                        x: p.x + p.w,
+                        z: p.z + p.l
+                    }
+                );
+            });
+
+            return [packs, space];
+        }
+
+        //checks if the points is contained in a certain space
+        function isPointContainedInSpace(packSpace, point, restrected) {
+            // console.log(point.x, point.z, packSpace[0], packSpace[3])
+            return restrected ?
+                point.x > packSpace[0].x && point.x <= packSpace[3].x && point.z > packSpace[0].z && point.z <= packSpace[3].z
+                :
+                point.x >= packSpace[0].x && point.x <= packSpace[3].x && point.z >= packSpace[0].z && point.z <= packSpace[3].z;
+        }
+
+        function saveStep() {
+            let steps = JSON.parse(localStorage.getItem("steps"));
+            if (steps != null) {
+                steps.push({
+                    stepNumber: ++Dragger.currentStep,
+                    loadedPacks: Dragger.loadedPack,
+                    openPoint: Dragger.openPoints
+                })
+
+                localStorage.setItem("steps", JSON.stringify(steps))
+            }
+        }
+
         function createDraggingPoint() {
+
+            //create the open point
+            function createOpenPoints(coords, pack) {
+
+                let validOpenPoint = [
+                    {
+                        pointOwner: pack.id,
+                        x: coords.x,
+                        y: coords.y + pack.h,
+                        z: coords.z,
+                        type: "T",
+                        ignored: false,
+                    },
+                ];
+
+                let openPoints = [
+                    {
+                        pointOwner: pack.id,
+                        x: coords.x,
+                        y: coords.y,
+                        z: coords.z + pack.l,
+                        type: "R",
+                        ignored: false,
+                    },
+                    {
+                        pointOwner: pack.id,
+                        x: coords.x + pack.w,
+                        y: coords.y,
+                        z: coords.z,
+                        type: "F",
+                        ignored: false,
+                    }
+                ];
+
+                if (coords.x == 0 && coords.y == 0 && coords.z == 0)
+                    return [...validOpenPoint, ...openPoints];
+
+                let twoDimensionSpace = create2dSpace(coords);
+                let packs = twoDimensionSpace[0];
+                let space = twoDimensionSpace[1];
+
+                if (packs.length != 0 && Object.keys(space).length != 0) {
+
+                    for (let i = 0; i < openPoints.length; i++) {
+                        let point = openPoints[i];
+
+                        let check = 0;
+                        for (let j = 0; j < packs.length; j++) {
+                            let p = packs[j];
+                            let packSpace = space[p.id];
+
+                            let testPoint = {
+                                x: point.x + 1,
+                                z: point.z + 1
+                            }
+
+                            if (point.y == 0) {
+                                if (!isPointContainedInSpace(packSpace, testPoint, false))
+                                    check++;
+                            }
+
+                            else {
+                                if (isPointContainedInSpace(packSpace, testPoint, false)) {
+                                    let loadedPackInSpace = Dragger.loadedPack.filter(p => {
+                                        // console.log(p.id, point);
+                                        return p.x <= point.x + 1
+                                            && p.x + p.w > point.x + 1
+                                            && p.z <= point.z + 1
+                                            && p.z + p.l > point.z + 1
+                                            && p.y == coords.y
+                                            && p.id != point.pointOwner
+                                    });
+
+                                    let dis;
+                                    if (point.type == "R") dis = packSpace[3].z - point.z;
+                                    if (point.type == "F") dis = packSpace[3].x - point.x;
+
+                                    // console.log(point.type, pack, pack.id, dis);
+
+                                    // console.log(loadedPackInSpace);
+                                    if (loadedPackInSpace.length == 0) {
+                                        if (point.type == "R")
+                                            validOpenPoint.push(openPoints[0]);
+                                        if (point.type == "F")
+                                            validOpenPoint.push(openPoints[1]);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (check == packs.length) {
+                            if (point.type == "R") {
+                                validOpenPoint.push(openPoints[0]);
+                            }
+
+                            if (point.type == "F") {
+                                validOpenPoint.push(openPoints[1]);
+                            }
+                        }
+                    }
+                }
+
+                // console.log(validOpenPoint)
+                return validOpenPoint;
+            }
+
             if (transformControl != null) {
                 let obj = transformControl.object.children[0];
                 let dimension = obj.geometry.parameters;
-                let pointOwner = obj.userData.id;
 
+                console.log(transformControl.object)
+                // add the new pack to the loadedpack array
                 Dragger.loadedPack.push({
                     id: box.userData.id,
                     parent_id: box.userData.parent_id,
@@ -88,32 +285,55 @@ class Dragger {
                     x: Dragger.currentPos.x,
                     y: Dragger.currentPos.y,
                     z: Dragger.currentPos.z,
+                    color:Dragger.item.packDetails.color,
                     box: box,
+                    fullBox: transformControl.object
                 });
 
-                Dragger.openPoints.push(
-                    {
-                        pointOwner: pointOwner,
-                        x: Dragger.currentPos.x,
-                        y: Dragger.currentPos.y,
-                        z: Dragger.currentPos.z + dimension.depth,
-                        type: "R"
-                    },
-                    {
-                        pointOwner: pointOwner,
-                        x: Dragger.currentPos.x,
-                        y: Dragger.currentPos.y + dimension.height,
-                        z: Dragger.currentPos.z,
-                        type: "T"
-                    },
-                    {
-                        pointOwner: pointOwner,
-                        x: Dragger.currentPos.x + dimension.width,
-                        y: Dragger.currentPos.y,
-                        z: Dragger.currentPos.z,
-                        type: "F"
-                    }
-                );
+                // save all the dragged boxes into the scene
+                Dragger.allLoadedPacks.push({
+                    id: box.userData.id,
+                    parent_id: box.userData.parent_id,
+                    w: dimension.width,
+                    h: dimension.height,
+                    l: dimension.depth,
+                    x: Dragger.currentPos.x,
+                    y: Dragger.currentPos.y,
+                    z: Dragger.currentPos.z,
+                    color:Dragger.item.packDetails.color,
+                    box: box,
+                    fullBox: transformControl.object
+                });
+
+                let loaded = Dragger.getNbLoadedPacksById(Dragger.item.parent_id, Dragger.item.q)
+                new DragDropLogger(Dragger.item.packDetails, loaded, Dragger.item.q - loaded == 0 ? "All loaded" : "On loading").dispatchMessage()
+
+                // create the new open points
+                Dragger.openPoints.push(...createOpenPoints(Dragger.currentPos, Dragger.loadedPack[Dragger.loadedPack.length - 1]));
+
+                // Dragger.openPoints.push(
+                //     {
+                //         pointOwner: pointOwner,
+                //         x: Dragger.currentPos.x,
+                //         y: Dragger.currentPos.y,
+                //         z: Dragger.currentPos.z + dimension.depth,
+                //         type: "R"
+                //     },
+                //     {
+                //         pointOwner: pointOwner,
+                //         x: Dragger.currentPos.x,
+                //         y: Dragger.currentPos.y + dimension.height,
+                //         z: Dragger.currentPos.z,
+                //         type: "T"
+                //     },
+                //     {
+                //         pointOwner: pointOwner,
+                //         x: Dragger.currentPos.x + dimension.width,
+                //         y: Dragger.currentPos.y,
+                //         z: Dragger.currentPos.z,
+                //         type: "F"
+                //     }
+                // );
 
                 let indexObjToRemove = Dragger.openPoints.findIndex(p =>
                     p.x == Dragger.currentPos.x
@@ -128,8 +348,6 @@ class Dragger {
                     return ((a.x - b.x || a.z - b.z) || a.y - b.y);
                 });
 
-                scene.remove(scene.getObjectByName("sphere"));
-
                 let pointGroup = new THREE.Group();
                 pointGroup.name = "sphere";
 
@@ -141,19 +359,12 @@ class Dragger {
                     pointGroup.add(sphere);
                 })
 
+                // save the current state
+                saveStep();
+                // remove the old point
+                // add the new ones
+                scene.remove(scene.getObjectByName("sphere"));
                 scene.add(pointGroup)
-
-                let pointGroup1 = new THREE.Group();
-                pointGroup1.name = "sphere";
-                Dragger.specificOpenPoints.forEach(p => {
-                    const geometry = new THREE.SphereGeometry(3, 32, 16);
-                    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                    const sphere = new THREE.Mesh(geometry, material);
-                    sphere.position.set(p.x, p.y, p.z)
-                    pointGroup1.add(sphere);
-                });
-
-                scene.add(pointGroup1)
 
                 transformControl.detach();
                 transformControl = null;
@@ -179,8 +390,10 @@ class Dragger {
 
                 found.material.transparent = true;
                 found.material.opacity = 0.6;
-                found.userData.dragDrop = false;
+                // found.userData.dragDrop = false;
             }
+
+            Dragger.item = {}
         }
 
         function updateRotationFaces() {
@@ -194,10 +407,11 @@ class Dragger {
                 return r.type[0] == Dragger.currentRotation.face
                     && r.type[1] == Dragger.currentRotation.yAxis
             });
-            console.log(index)
+
 
             if (index != -1) {
-                let newDim = possibleR.rotations[index];
+                // console.log(index, ++index, possibleR.rotations.length, ++index % possibleR.rotations.length)
+                let newDim = possibleR.rotations[++index % possibleR.rotations.length];
                 let new_box_geometry = new THREE.BoxGeometry(newDim.w, newDim.h, newDim.l);
                 let new_edge_geometry = new THREE.EdgesGeometry(new_box_geometry);
 
@@ -209,9 +423,11 @@ class Dragger {
                     transformControl.object.children[1].geometry = new_edge_geometry;
 
                     Dragger.currentRotation = {
-                        face: possibleR.rotations[++index % possibleR.rotations.length].type[0],
+                        face: possibleR.rotations[index % possibleR.rotations.length].type[0],
                         yAxis: possibleR.rotations[index % possibleR.rotations.length].type[1]
                     }
+
+                    currentRotationUpdate(Dragger.currentRotation.face, Dragger.currentRotation.yAxis);
                 }
             }
         }
@@ -238,54 +454,8 @@ class Dragger {
                 }
             }
 
+            return possibleR.rotations;
         }
-
-        // function updateRotationYaxis(rotationDeg) {
-        //     // 0 means rotate by 0 deg
-        //     // Math.PI/2 means rotate by 90 deg
-        //     function newDimensions(userRotation, yAxis) {
-        //         let newDimensions = {};
-        //         if (userRotation == "base") {
-        //             if (yAxis == 0)
-        //                 newDimensions = { w: initialDim.w, h: initialDim.h, l: initialDim.l };
-        //             if (yAxis == Math.PI / 2)
-        //                 newDimensions = { w: initialDim.l, h: initialDim.h, l: initialDim.w };
-        //         }
-        //         if (userRotation == "right-side") {
-        //             if (yAxis == 0)
-        //                 newDimensions = { w: initialDim.h, h: initialDim.l, l: initialDim.w };
-        //             if (yAxis == Math.PI / 2)
-        //                 newDimensions = { w: initialDim.w, h: initialDim.l, l: initialDim.h };
-
-        //         }
-        //         if (userRotation == "front-side") {
-        //             if (yAxis == 0)
-        //                 newDimensions = { w: initialDim.h, h: initialDim.w, l: initialDim.l };
-        //             if (yAxis == Math.PI / 2)
-        //                 newDimensions = { w: initialDim.l, h: initialDim.w, l: initialDim.h };
-        //         }
-
-        //         return newDimensions;
-        //     }
-
-        //     let initialDim = Dragger.item.stat.dimensions;
-        //     Dragger.currentRotation.yAxis = rotationDeg
-
-        //     console.log(Dragger.currentRotation)
-        //     let newDim = newDimensions(Dragger.currentRotation.face, Dragger.currentRotation.yAxis)
-        //     let new_box_geometry = new THREE.BoxGeometry(newDim.w, newDim.h, newDim.l);
-        //     let new_edge_geometry = new THREE.EdgesGeometry(new_box_geometry);
-
-        //     new_box_geometry.translate(newDim.w / 2, newDim.h / 2, newDim.l / 2);
-        //     new_edge_geometry.translate(newDim.w / 2, newDim.h / 2, newDim.l / 2);
-
-        //     transformControl.object.children[0].geometry = new_box_geometry;
-        //     transformControl.object.children[1].geometry = new_edge_geometry;
-        // }
-
-        // apply the magnetic effect
-        // find the close point
-        // if there is collision or the user mouseup, put the box directly on the point
 
         function findClosePoint(point) {
             const dist = (a, b) => Math.sqrt(
@@ -302,7 +472,8 @@ class Dragger {
             return Dragger.openPoints.length == 1 ? closest(point, Dragger.openPoints) : closest(point, Dragger.specificOpenPoints)
         }
 
-        //remove the point where the box is added then sort the other points into the right order
+        // remove the point where the box is added 
+        // then sort the other points into the right order
         function refreshOpenPoints(idItemToRemove) {
             //removes the duplicates objects or points exist in a certain array
             function removeDuplicatesObjectFromArray(array) {
@@ -449,41 +620,32 @@ class Dragger {
             removeNonWorkingOpenPoints();
         }
 
-        // transformControl.addEventListener('objectChange', (event) => {
-        //     // console.log(event.target.children[0].pointStart, event.target.children[0].pointEnd)
-        //     // console.log(transformControl, transformControl.axis, box);
-        //     // console.log(e,vent.target.children[1].position, event.target.children[1].rotation)
-        //     var quaternion = new THREE.Quaternion()
-        //     var vec3 = new THREE.Vector3();
-        //     let rotation = new THREE.Euler();
-        //     // rotation.setFromQuaternion(quaternion)
-        //     // console.log(rotation.setFromQuaternion(transformControl.object.getWorldQuaternion(quaternion)), transformControl.object.getWorldPosition(vec3));
-        //     transformControl.showX = true
-        //     transformControl.showY = true
-        //     transformControl.showZ = true
-
-        //     transformControl.dragging = true;
-
-
-
-        // });
-
         transformControl.addEventListener('mouseUp', function (event) {
             let obj = transformControl.object;
             let pos = event.target.children[1].position;
             let closePoint = findClosePoint(pos);
-
+            console.log(closePoint)
             obj.position.set(closePoint.x, closePoint.y, closePoint.z);
-            adaptBoxToTheSpecificationOfOpenPoint(closePoint)
+            let possibleR = adaptBoxToTheSpecificationOfOpenPoint(closePoint)
             Dragger.currentPos = closePoint;
+            Dragger.mouseOnAction = false;
+
+            changeOpacityUnvailableRotations(possibleR)
+        });
+
+        transformControl.addEventListener('mouseDown', function (event) {
+            Dragger.mouseOnAction = true;
         });
 
         document.addEventListener('keydown', function (event) {
             switch (event.key.toUpperCase()) {
                 case "DELETE": // Delete
-                    scene.remove(transformControl.object)
-                    transformControl.detach();
-                    transformControl = null;
+                    if (!Dragger.mouseOnAction && transformControl != null) {
+                        Dragger.item = {}
+                        scene.remove(transformControl.object)
+                        transformControl.detach();
+                        transformControl = null;
+                    }
                     break;
 
                 case "SHIFT": // Shift
@@ -531,46 +693,78 @@ class Dragger {
                     break;
 
                 case "ESCAPE": // Esc
-                    reset();
+                    if (!Dragger.mouseOnAction)
+                        reset();
                     break;
 
                 case "ENTER": // Enter
-                    createDraggingPoint()
+                    if (!Dragger.mouseOnAction)
+                        createDraggingPoint()
                     break;
 
                 case "F": // F
-                    updateRotationFaces()
+                    if (!Dragger.mouseOnAction)
+                        updateRotationFaces()
                     break;
-
-                // case "ARROWRIGHT":
-                //     if (Dragger.lastKeyPressed == "F") {
-                //         console.log("rotate 0")
-                //         updateRotationYaxis(0)
-                //     }
-                //     break;
-
-                // case "ARROWLEFT":
-                //     if (Dragger.lastKeyPressed == "F") {
-                //         console.log("rotate PI/2")
-                //         updateRotationYaxis(Math.PI / 2)
-                //     }
-                //     break;
 
                 default:
                     console.log("this key don't support any action");
             }
         });
-
-        // document.addEventListener('keyup', function (event) {
-        //     if (event.key.toUpperCase() != "ARROWRIGHT" && event.key.toUpperCase() != "ARROWLEFT")
-        //         Dragger.lastKeyPressed = event.key.toUpperCase();
-        // });
     }
 
     //check if the pack fit into the box
     //check the possible rotations that the box stills in the container
     //each point have its specification: possible rotations
     static filterOpenPointByPackage() {
+
+        //create a 2d space on top of boxes
+        function create2dSpace(coords) {
+            //find the boxes that will create our 2d space
+            let packs = Dragger.loadedPack.filter(p => {
+                let upperPoint = coords.y > 0 ? p.y + p.h : p.y;
+                // console.log(upperPoint)
+                // let upperPoint = p.y;
+                return upperPoint == coords.y
+            });
+
+            // console.log(packs);
+
+            //fill the space with the coordinates of each box
+            let space = [];
+            packs.forEach(p => {
+                if (space[p.id] == null) space[p.id] = [];
+                space[p.id].push(
+                    {
+                        x: p.x,
+                        z: p.z
+                    },
+                    {
+                        x: p.x + p.w,
+                        z: p.z
+                    },
+                    {
+                        x: p.x,
+                        z: p.z + p.l
+                    },
+                    {
+                        x: p.x + p.w,
+                        z: p.z + p.l
+                    }
+                );
+            });
+
+            return [packs, space];
+        }
+
+        //checks if the points is contained in a certain space
+        function isPointContainedInSpace(packSpace, point, restrected) {
+            // console.log(point.x, point.z, packSpace[0], packSpace[3])
+            return restrected ?
+                point.x > packSpace[0].x && point.x <= packSpace[3].x && point.z > packSpace[0].z && point.z <= packSpace[3].z
+                :
+                point.x >= packSpace[0].x && point.x <= packSpace[3].x && point.z >= packSpace[0].z && point.z <= packSpace[3].z;
+        }
 
         //check the colllisions with the container and the box
         function checkCollision(box) {
@@ -587,7 +781,7 @@ class Dragger {
             newBox.min.x = newBox.min.x + 1;
             newBox.min.y = newBox.min.y + 1;
             newBox.min.z = newBox.min.z + 1;
-
+            console.log(Dragger.loadedPack)
             for (let i = 0; i < Dragger.loadedPack.length; i++) {
                 let loadedBox = Dragger.loadedPack[i].box;
 
@@ -597,23 +791,142 @@ class Dragger {
                 let newBox1 = loadedBox.geometry.boundingBox.clone();
                 newBox1.applyMatrix4(loadedBox.matrixWorld);
 
-                console.log(newBox, newBox1, newBox.intersectsBox(newBox1))
+                newBox1.max.x = newBox1.max.x - 1;
+                newBox1.max.y = newBox1.max.y - 1;
+                newBox1.max.z = newBox1.max.z - 1;
 
-                // newBox1.max.x = newBox1.max.x - 1;
-                // newBox1.max.y = newBox1.max.y - 1;
-                // newBox1.max.z = newBox1.max.z - 1;
+                newBox1.min.x = newBox1.min.x + 1;
+                newBox1.min.y = newBox1.min.y + 1;
+                newBox1.min.z = newBox1.min.z + 1;
 
-                // newBox1.min.x = newBox1.min.x + 1;
-                // newBox1.min.y = newBox1.min.y + 1;
-                // newBox1.min.z = newBox1.min.z + 1;
-
-                // if (newBox.intersectsBox(newBox1)) {
-                //     return newBox.intersectsBox(newBox1);
-                // }
+                if (newBox.intersectsBox(newBox1)) {
+                    return newBox.intersectsBox(newBox1);
+                }
             }
 
             return false
         }
+
+        //create a temperory box to detect collisions
+        function createTemperoryBox(pack, coords) {
+            let normalMateriel = new THREE.MeshLambertMaterial({ color: 0xFF0FFF, side: THREE.DoubleSide })
+
+            let boxGeometry = new THREE.BoxGeometry(pack.w, pack.h, pack.l);
+            let box = new THREE.Mesh(boxGeometry, normalMateriel);
+            let vec3 = new THREE.Vector3(coords.x, coords.y, coords.z);
+
+            box.position.copy(vec3);
+            boxGeometry.translate(pack.w / 2, pack.h / 2, pack.l / 2);
+
+            return box;
+        }
+
+        // Each box have 4 point in his base face
+        // I check if the 4 points are contained inside that surface
+        // Return true or false
+        function canFitAboveTheBoxNewVersion(pack, coords) {
+
+            // create the four point of our pack
+            let packPoints = [
+                // 1
+                {
+                    x: coords.x,
+                    z: coords.z,
+                },
+                {
+                    x: (3 * coords.x + (coords.x + pack.w)) / 4,
+                    z: coords.z,
+                },
+                {
+                    x: (coords.x + (coords.x + pack.w)) / 2,
+                    z: coords.z,
+                },
+                {
+                    x: (coords.x + 3 * (coords.x + pack.w)) / 4,
+                    z: coords.z,
+                },
+                {
+                    x: coords.x + pack.w,
+                    z: coords.z,
+                },
+
+                // 2
+                {
+                    x: coords.x,
+                    z: (coords.z + 3 * (coords.z + pack.l)) / 4,
+                },
+                {
+                    x: coords.x,
+                    z: (coords.z + (coords.z + pack.l)) / 2,
+                },
+                {
+                    x: coords.x,
+                    z: (3 * coords.z + (coords.z + pack.l)) / 4,
+                },
+                {
+                    x: coords.x,
+                    z: coords.z + pack.l,
+                },
+
+
+                // 3
+                {
+                    x: (coords.x + 3 * (coords.x + pack.w)) / 4,
+                    z: coords.z + pack.l,
+                },
+                {
+                    x: (coords.x + (coords.x + pack.w)) / 2,
+                    z: coords.z + pack.l,
+                },
+                {
+                    x: (3 * coords.x + (coords.x + pack.w)) / 4,
+                    z: coords.z + pack.l,
+                },
+                {
+                    x: coords.x + pack.w,
+                    z: coords.z + pack.l,
+                },
+
+                // 4
+                {
+                    x: coords.x + pack.w,
+                    z: (coords.z + 3 * (coords.z + pack.l)) / 4,
+                },
+                {
+                    x: coords.x + pack.w,
+                    z: (coords.z + (coords.z + pack.l)) / 2,
+                },
+                {
+                    x: coords.x + pack.w,
+                    z: (3 * coords.z + (coords.z + pack.l)) / 4,
+                },
+            ];
+
+            // create the 2d space using the packs that have the same height 
+            // from a certain coords
+            let twoDimensionSpace = create2dSpace(coords);
+            let packs = twoDimensionSpace[0];
+            let space = twoDimensionSpace[1];
+
+            // check if the four point of the pack are contained inside our 2D space
+            let check = 0;
+            for (let i = 0; i < packPoints.length; i++) {
+                for (let j = 0; j < packs.length; j++) {
+                    let p = packs[j];
+                    let pointToTrait = packPoints[i];
+                    let packSpace = space[p.id];
+
+                    if (isPointContainedInSpace(packSpace, pointToTrait, false)) {
+                        check++;
+                        break;
+                    }
+                }
+            }
+
+            return check == 16;
+        }
+
+        Dragger.specificOpenPoints = [];
 
         let specificOpenPoints = [];
         let limits = DragSurface.dragSurface;
@@ -652,6 +965,7 @@ class Dragger {
             }
         }
 
+        console.log(Dragger.openPoints)
         for (let i = 0; i < Dragger.openPoints.length; i++) {
             let p = Dragger.openPoints[i];
             let possibleRotations = Dragger.item.packDetails.rotations;
@@ -661,11 +975,15 @@ class Dragger {
 
             for (let j = 0; j < possibleRotations.length; j++) {
                 let rotation = possibleRotations[j];
+                let tmpBox = createTemperoryBox(rotation, p);
+
+                if (checkCollision(tmpBox)) continue;
+                if (p.y > 0 && !canFitAboveTheBoxNewVersion(rotation, p)) continue;
+
                 if (
                     rotation.w + p.x <= limits.width
                     && rotation.h + p.y <= limits.height
                     && rotation.l + p.z <= limits.lenght
-                    && !checkCollision(Dragger.item.object)
                 ) {
                     specificRotations.push({
                         ...rotation,
@@ -689,6 +1007,22 @@ class Dragger {
 
         Dragger.specificOpenPoints = specificOpenPoints;
         console.log(Dragger.specificOpenPoints);
+        changeOpacityUnvailableRotations(specificRotations)
+
+
+        let specificOpenPointsGroup = new THREE.Group();
+        specificOpenPointsGroup.name = "specificOpenPoints";
+
+        Dragger.specificOpenPoints.forEach(p => {
+            const geometry = new THREE.SphereGeometry(3, 32, 16);
+            const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(p.x, p.y, p.z)
+            specificOpenPointsGroup.add(sphere);
+        });
+
+        scene.remove(scene.getObjectByName("specificOpenPoints"));
+        scene.add(specificOpenPointsGroup)
     }
 }
 

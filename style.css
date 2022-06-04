@@ -284,6 +284,27 @@ a {
   cursor: pointer;
 }
 
+.solving-mode{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.solving-mode div{
+  background-color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+  width: 300px;
+  padding: 5px 10px;
+  margin: 0 5px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 20px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
 /***** global classes *****/
 .menu-icons {
   position: absolute;
@@ -999,7 +1020,7 @@ input[type="range"]:hover::-moz-range-thumb {
   background-color: red;
 }
 
-.pack-hover-content{
+.pack-hover-content {
   margin-top: 30px;
 }
 
@@ -1014,3 +1035,170 @@ input[type="range"]:hover::-moz-range-thumb {
 .pack-hover-content .item .title {
   font-weight: bolder;
 }
+
+/* drag and drop controller */
+.dragDrop-container{
+  position: absolute;
+  bottom: 140px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 10px 22px;
+  overflow: hidden;
+  color: white;
+  transition: .3s ease-in-out;
+}
+
+.dragDrop-container--close{
+  height: 26px;
+}
+
+.dragDrop-container--open{
+  height: 150px;
+}
+
+.dragDrop-container .dragDrop-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.dragDrop-container .dragDrop-content .dragDrop-options {
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+}
+
+.dragDrop-container .dragDrop-content .dragDrop-options .d-less-opacity {
+  opacity: .2;
+}
+
+.dragDrop-container .dragDrop-content .dragDrop-options .d-current-rotate {
+  color: green
+}
+
+.dragDrop-container .dragDrop-content .pointer {
+  cursor: pointer;
+}
+
+.dragDrop-container .dragDrop-content .dragDrop-options .option-rotation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 8px;
+  margin: 0 5px;
+}
+
+.dragDrop-container .dragDrop-content .dragDrop-options .option-rotation i {
+  margin: 2px;
+}
+
+.dragDrop-container .dragDrop-logger {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.dragDrop-container .dragDrop-logger .title {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 15px 0;
+}
+
+.dragDrop-container .dragDrop-logger .logger-content .logger-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 5px 0;
+}
+
+.dragDrop-container .dragDrop-logger .logger-content .logger-detail .pack-title {
+  font-weight: bold;
+}
+
+.disabled{
+  pointer-events: none;
+  opacity: 0.2;
+}
+/* drag and drop controller */
+
+
+
+/* guidline-dragdrop */
+
+.guidline-dragdrop-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  transition: .3s ease-in-out;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content{
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);color: white;
+  padding: 20px;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines{
+  width: 40%;
+  padding: 10px;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline{
+  margin: 10px 0;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline .t-guidline-subDetails{
+  color: rgb(185, 185, 185);
+  font-size: 12px;
+  padding-left: 10px;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline .t-guidline-subDetails p{
+  margin: 5px;
+}
+
+/* keys-guidlines */
+.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines{
+  padding: 10px;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines .key-guidline{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines .key-guidline .key{
+  background-color: grey;
+  padding: 5px 10px;
+  font-weight: bold;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin-right: 10px;
+}
+
+.toggleGuidlines{
+  visibility: hidden;
+  opacity: 0;
+  transition: .3s ease-in-out;
+}
+
+
+/* keys-guidlines */
+
+/* guidline-dragdrop */
