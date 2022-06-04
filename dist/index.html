@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.2f45e505.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.c79da0ee.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.ea1935bb.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.3d0a4658.css">
 </head>
 
 <body>
@@ -28,41 +28,41 @@
       <!-- loader -->
 
       <!-- drap/drop controller -->
-      <div class="dragDrop-container">
+      <div class="dragDrop-container dragDrop-container--close" id="dragDrop">
         <div class="dragDrop-content">
           <div class="dragDrop-options pointer">
-            <i class="fa-solid fa-keyboard"></i>
+            <i class="fa-solid fa-keyboard" id="dragDrop-shortcuts"></i>
           </div>
 
           <div class="dragDrop-options pointer">
-            <i class="fa-solid fa-backward"></i>
+            <i class="fa-solid fa-trash-can" id="delete-all"></i>
           </div>
 
           <div class="dragDrop-options pointer">
-            <i class="fa-solid fa-forward"></i>
+            <i class="fa-solid fa-backward" id="dragDrop-backward"></i>
           </div>
 
-          <div class="dragDrop-options">
-            <i class="fa-solid fa-cube"></i>
+          <div class="dragDrop-options" id="d-base">
+            <i class="fa-solid fa-cube fa-rotate-270 d-less-opacity"></i>
             <div class="option-rotation">
-              <i class="fa-solid fa-arrow-rotate-left"></i>
-              <i class="fa-solid fa-arrow-rotate-right"></i>
+              <i class="fa-solid fa-arrow-rotate-left d-less-opacity"></i>
+              <i class="fa-solid fa-arrow-rotate-right d-less-opacity"></i>
             </div>
           </div>
 
-          <div class="dragDrop-options">
-            <i class="fa-solid fa-cube fa-rotate-by" style="--fa-rotate-angle: 90deg;"></i>
+          <div class="dragDrop-options" id="d-right-side">
+            <i class="fa-solid fa-cube d-less-opacity"></i>
             <div class="option-rotation">
-              <i class="fa-solid fa-arrow-rotate-left"></i>
-              <i class="fa-solid fa-arrow-rotate-right"></i>
+              <i class="fa-solid fa-arrow-rotate-left d-less-opacity"></i>
+              <i class="fa-solid fa-arrow-rotate-right d-less-opacity"></i>
             </div>
           </div>
 
-          <div class="dragDrop-options">
-            <i class="fa-solid fa-cube fa-flip-horizontal"></i>
+          <div class="dragDrop-options" id="d-front-side">
+            <i class="fa-solid fa-cube fa-flip-horizontal d-less-opacity"></i>
             <div class="option-rotation">
-              <i class="fa-solid fa-arrow-rotate-left"></i>
-              <i class="fa-solid fa-arrow-rotate-right"></i>
+              <i class="fa-solid fa-arrow-rotate-left d-less-opacity"></i>
+              <i class="fa-solid fa-arrow-rotate-right d-less-opacity"></i>
             </div>
           </div>
 
@@ -70,8 +70,8 @@
             <i class="fa-solid fa-download"></i>
           </div>
 
-          <div class="dragDrop-options pointer">
-            <i class="fa-solid fa-circle-check"></i>
+          <div class="dragDrop-options pointer" id="openDragger">
+            <i class="fa-solid fa-circle-minus"></i>
           </div>
 
         </div>
@@ -80,55 +80,13 @@
           <div class="title"> Dragger </div>
           <div class="logger-content">
             <div class="logger-detail">
-              <span class="pack-title">Label</span>
-              <span>pack dalla sdoksdok</span>
-            </div>
-            <div class="logger-detail">
-              <span class="pack-title">Quanitty</span>
-              <span>30</span>
-            </div>
-            <div class="logger-detail">
-              <span class="pack-title">Loaded</span>
-              <span>20</span>
-            </div>
-            <div class="logger-detail">
-              <span class="pack-title">Stat</span>
-              <span>all loaded/ no enought space</span>
+              <span class="pack-title" style="text-align: center;">Start Dragging some elements to show details</span>
+              <!-- <span>pack dalla sdoksdok</span> -->
             </div>
           </div>
         </div>
       </div>
       <!-- drap/drop controller -->
-
-      <!-- packhover -->
-      <!-- <div class="pack-hover-perspective">
-        <div class="pack-hover-container" data-before="pack dallae moussem">
-          <div class="pack-hover-content">
-
-            <div class="item">
-              <span class="title">Dimensions</span>
-              <span>1,2,0.5</span>
-            </div>
-
-            <div class="item">
-              <span class="title">Rotations</span>
-              <span>B, F, R</span>
-            </div>
-
-            <div class="item">
-              <span class="title">Quantity</span>
-              <span>25</span>
-            </div>
-
-            <div class="item">
-              <span class="title">Loaded</span>
-              <span>24</span>
-            </div>
-
-          </div>
-        </div>
-      </div> -->
-      <!-- packhover -->
 
       <!-- menu open icon -->
       <div class="menuIcon openMenuIcon">
@@ -140,9 +98,9 @@
       <div class="menu closeMenu">
 
         <div class="menu-icons">
-          <div class="menu-icon" id="switchManuelleMode">
+          <!-- <div class="menu-icon" id="switchManuelleMode">
             <i class="fa-solid fa-hand-back-fist"></i>
-          </div>
+          </div> -->
 
           <div class="menu-icon reset" id="reset">
             <i class="fa-solid fa-recycle"></i>
@@ -209,23 +167,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <div class="localstorage">
-        <div class="formContainer ">
-          <h3 class="packAdd">
-            <span>Local storage (default)</span>
-            <i class="fa-solid fa-circle-plus" id="openLocalStorage"></i>
-          </h3>
-
-          <div class="formContainerContentClose" id="localstorage">
-            <div class="upload">
-              <p>If you have data in your localstorage </p>
-              <button>load</button>
-            </div>
-
-          </div>
-        </div>
-      </div> -->
 
         <div class="sectionTitle">
           Add data manually
@@ -398,7 +339,16 @@
           </div>
         </div>
 
-        <button class="solveBtn" type="button" id="solve">Solve</button>
+        <div class="sectionTitle">
+          Solving Mode
+          <div class="line"></div>
+        </div>
+
+        <div class="solving-mode">
+          <div class="option" id="solve">Automatically</div>
+          <div class="option" id="switchManuelleMode">Manually</div>
+        </div>
+
       </div>
       <!-- main menu -->
 
@@ -526,8 +476,98 @@
       </div>
       <!-- logger -->
 
+      <!-- guidelines of dragdrop mode -->
+      <div class="guidline-dragdrop-container toggleGuidlines">
+        <div class="guidline-dragdrop-content">
+
+          <div class="text-guidlines">
+
+            <div class="t-guidlline">
+              Click on the boxes to drag it into the container
+              <div class="t-guidline-subDetails">
+                <p>Each box have 3 directions of mouvement</p> 
+                <p>Each box have maximum 6 rotations</p>
+              </div>
+            </div>
+
+            <div class="t-guidlline">
+              Check the dragger logs to understand the sitation of the box
+              <div class="t-guidline-subDetails">
+                <p>If all the quantity loaded the box is less opacity</p>
+                <p>If you click and don't dragged means there is no left space in the container</p>
+              </div>
+            </div>
+
+            <div class="t-guidlline">
+              Magnet effect
+              <div class="t-guidline-subDetails">
+                <p>let the box the closest point if found and the box is dragged to that point</p>
+                <p>Each point have it own rotations</p>      
+              </div>
+            </div>
+
+            <div class="t-guidlline">
+              Rotate the box
+              <div class="t-guidline-subDetails">
+                <p>Rotation depend on the specification of the pack and the point</p>
+                <p>Each point have the possible rotation for the dragged box</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="keys-guidlines">
+            <div class="key-guidline">
+              <div class="key">DEL</div>
+              <div class="key-desc">Delete the dragged box</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">ESC</div>
+              <div class="key-desc">Reset the dragged box to its initial stat</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">ENTER</div>
+              <div class="key-desc">Confirm the position of the dragged box</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">R</div>
+              <div class="key-desc">Change the rotation of the dragged box</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">X</div>
+              <div class="key-desc">Show/Hide the X axes of the drag controls</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">Y</div>
+              <div class="key-desc">Show/Hide the Y axes of the drag controls</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">Z</div>
+              <div class="key-desc">Show/Hide the Z axes of the drag controls</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">+ | =</div>
+              <div class="key-desc">Maximize the sie of the drag controls</div>
+            </div>
+
+            <div class="key-guidline">
+              <div class="key">- | _</div>Minimize the size of the drag controls
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
+    <!-- guidelines of dragdrop mode -->
   </div>
+
 
   <!-- GSAP Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
