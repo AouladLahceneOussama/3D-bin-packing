@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.ea1935bb.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.3d0a4658.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.129e4ac9.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.f304b459.css">
 </head>
 
 <body>
@@ -28,7 +28,7 @@
       <!-- loader -->
 
       <!-- drap/drop controller -->
-      <div class="dragDrop-container dragDrop-container--close" id="dragDrop">
+      <div class="dragDrop-container dragDrop-container--close hidden" id="dragDrop">
         <div class="dragDrop-content">
           <div class="dragDrop-options pointer">
             <i class="fa-solid fa-keyboard" id="dragDrop-shortcuts"></i>
@@ -67,7 +67,7 @@
           </div>
 
           <div class="dragDrop-options pointer">
-            <i class="fa-solid fa-download"></i>
+            <i class="fa-solid fa-circle-check" id="d-confirm-result"></i>
           </div>
 
           <div class="dragDrop-options pointer" id="openDragger">
@@ -292,7 +292,7 @@
                 </div>
                 <div>
                   <p class="inputLabel">Priority </p>
-                  <select id="packPriority" class="input" required>
+                  <select id="packPriority" class="pack_priorities input" required>
                   </select>
                 </div>
               </div>
@@ -407,7 +407,7 @@
             </div>
             <div>
               <p class="inputLabel">Priority </p>
-              <select id="pack_Detail_Priority" class="input" required></select>
+              <select id="pack_Detail_Priority" class="pack_priorities input" required></select>
             </div>
           </div>
 

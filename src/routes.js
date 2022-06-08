@@ -16,7 +16,6 @@ class Route {
     }
 
     get getRoute() {
-        console.log(this.routes)
         return {
             routeNumber: this.routeNumber,
             routes: this.routes
@@ -43,12 +42,12 @@ class Route {
     //initialise option in the select
     static initialisePriorityFields() {
         //create the list of priorities based on the number of routes
-        $("#packPriority option").remove();
-        $("#pack_Detail_Priority option").remove();
+        $(".pack_priorities option").remove();
+        // $("#pack_Detail_Priority option").remove();
 
         for (let i = 1; i <= Route.getRouteNumber("dechargement"); i++) {
-            $("#packPriority").append('<option value="' + i + '">' + i + '</option>');
-            $("#pack_Detail_Priority").append('<option value="' + i + '">' + i + '</option>');
+            $(".pack_priorities").append('<option value="' + i + '">' + i + '</option>');
+            // $("#pack_Detail_Priority").append('<option value="' + i + '">' + i + '</option>');
         }
     }
 
@@ -97,4 +96,3 @@ class Route {
 }
 
 export default Route;
-
