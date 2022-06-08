@@ -410,6 +410,11 @@ class Pack {
         scene.remove(scene.getObjectByName("pack_shower"))
     }
 
+    static reloadShowPacker(){
+        Pack.removeBoxesFromTheScene();
+        Pack.loadPacks();
+    }
+
 }
 
 export default Pack;

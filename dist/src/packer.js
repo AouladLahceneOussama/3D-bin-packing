@@ -82,7 +82,7 @@ class Packer {
 
         //sort the priorities table
         priorities.sort((a, b) => {
-            return a - b;
+            return b - a;
         });
 
         return [prioritesedPackagesToLoad, priorities];
