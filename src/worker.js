@@ -11,5 +11,6 @@ onmessage = function (msg) {
         executionTime: (end - start) * Math.pow(10, -3)
     };
 
+    console.log((end - start), (end - start) * Math.pow(10, -3))
     postMessage(loadingResult);
 };

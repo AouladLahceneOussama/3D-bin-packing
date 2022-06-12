@@ -43,12 +43,10 @@ class Route {
     static initialisePriorityFields() {
         //create the list of priorities based on the number of routes
         $(".pack_priorities option").remove();
-        // $("#pack_Detail_Priority option").remove();
 
-        for (let i = 1; i <= Route.getRouteNumber("dechargement"); i++) {
+        for (let i = 1; i <= Route.getRouteNumber("dechargement"); i++) 
             $(".pack_priorities").append('<option value="' + i + '">' + i + '</option>');
-            // $("#pack_Detail_Priority").append('<option value="' + i + '">' + i + '</option>');
-        }
+        
     }
 
     //init loading the data from localstorage
@@ -71,15 +69,10 @@ class Route {
     }
 
     //add new route to the application
-    add() {
-        var routes = [];
-        if (localStorage.getItem("routes") !== null) {
-            routes = JSON.parse(localStorage.getItem("routes"));
-        }
-
-        routes.push(this.getRouteToLocalStorage)
-        localStorage.setItem("routes", JSON.stringify(routes));
-
+    addOrUpdate() {
+        localStorage.setItem("routes", JSON.stringify(this.getRouteToLocalStorage));
+        $("#routesDetails div").remove();
+        
         //add the data to the user interface
         Route.allRoutes.routes.forEach(route => {
             var routeInfo = route.from + " - " + route.to + "(" + route.type + ")";

@@ -6,17 +6,27 @@
   <link rel="icon" type="image/svg+xml" href="/3D-bin-packing/assets/favicon.17e50649.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.129e4ac9.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.f304b459.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.e06af850.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.79023c87.css">
 </head>
 
 <body>
   <div id="app">
 
     <div class="threeD-container" id="3D-container">
+
+      <!-- error message -->
+      <div class="error-container error-container--hidden">
+        <div class="error-message">
+          <i class="fa-solid fa-times-circle"></i>
+          <span id="errorMsg"></span>
+        </div>
+      </div>
+      <!-- error message -->
 
       <!-- loader -->
       <div class="threeD-container-loader threeD-container-loader--show">
@@ -157,8 +167,11 @@
             </h3>
 
             <div class="formContainerContentClose" id="api">
-              <p>Please insert the url of the api</p>
+              <p>Please follow the structure of this api</p>
+              <a target="_blank" href="https://aouladlahceneoussama.github.io/packer-data/data1.json">api example</a>
+
               <div class="upload">
+                <p>Please insert the url of the api</p>
                 <p class="inputLabel">API URL</p>
 
                 <input type="text" class="input" id="apiUrl" />
@@ -218,7 +231,7 @@
                 </div>
               </div>
 
-              <button class="btn">Add</button>
+              <button class="btn">Add/Update</button>
             </form>
           </div>
         </div>
@@ -349,6 +362,10 @@
           <div class="option" id="switchManuelleMode">Manually</div>
         </div>
 
+        <div>
+          <input type="checkbox" id="loadBoxes">
+          <span>Load Boxes in container</span>
+        </div>
       </div>
       <!-- main menu -->
 
@@ -476,6 +493,117 @@
       </div>
       <!-- logger -->
 
+      <!-- Packer loader -->
+      <div class="packer-loader packer-loader--hide">
+
+        <h1>Loading...</h1>
+        <h2>Please be patient it usualy take a few seconds to show results</h2>
+
+        <div class="loader">
+          <div class="item item-1">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-2">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-3">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-4">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-5">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-6">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-7">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-8">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-9">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-10">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-11">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-12">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-13">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-14">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-15">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-16">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-17">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-18">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-19">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-20">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-21">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-22">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-23">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-24">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+          <div class="item item-25">
+            <div class="lighter"></div>
+            <div class="darker"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Packer loader -->
+
       <!-- guidelines of dragdrop mode -->
       <div class="guidline-dragdrop-container toggleGuidlines">
         <div class="guidline-dragdrop-content">
@@ -485,7 +613,7 @@
             <div class="t-guidlline">
               Click on the boxes to drag it into the container
               <div class="t-guidline-subDetails">
-                <p>Each box have 3 directions of mouvement</p> 
+                <p>Each box have 3 directions of mouvement</p>
                 <p>Each box have maximum 6 rotations</p>
               </div>
             </div>
@@ -502,7 +630,7 @@
               Magnet effect
               <div class="t-guidline-subDetails">
                 <p>let the box the closest point if found and the box is dragged to that point</p>
-                <p>Each point have it own rotations</p>      
+                <p>Each point have it own rotations</p>
               </div>
             </div>
 

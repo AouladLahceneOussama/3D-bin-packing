@@ -1,3 +1,10 @@
-label,width (m),heigth (m),length (m),quantity,stackingCapacity (-1 no limit),rotations (3 rotations )
-container,8,2.4,2.4,,,
-item1,1.1,1.1,1.1,10,-1,"base,right-side,front-side"
+type,caracteriatics,,,,,,,
+route,id,from,to,type,,,,
+container,width (m),heigth (m),length (m),,,,,
+colis,label,width (m),heigth (m),length (m),quantity,stackingCapacity (-1 no limit),rotations (3 rotations ),priority
+,,,,,,,,
+route,1,Casa,Rabat,dechargement,,,,
+route,2,Rabat,Kenitra,dechargement,,,,
+container,8,2.4,2.4,,,,,
+colis,colis-1,1.1,1.1,1.1,10,-1,"base,right-side,front-side",1
+colis,Palette Dalaa VP,1.2,1.8,1.2,1,-1,base,1
