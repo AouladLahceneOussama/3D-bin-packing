@@ -1,4 +1,5 @@
 import { scale_meter_px } from "../configurations";
+import Logger from "../logger";
 
 class DragSurface {
     static draggerStat = false;
@@ -21,6 +22,11 @@ class DragSurface {
     }
 
     static switch(stat) {
+        if (!stat)
+            new Logger("Manual mode is deactivated", 0.01).dispatchMessage();
+        else
+            new Logger("Manual mode is activated (start dragging...)", 0.01).dispatchMessage();
+
         DragSurface.draggerStat = stat
     }
 }

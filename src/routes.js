@@ -16,7 +16,6 @@ class Route {
     }
 
     get getRoute() {
-        console.log(this.routes)
         return {
             routeNumber: this.routeNumber,
             routes: this.routes
@@ -43,13 +42,11 @@ class Route {
     //initialise option in the select
     static initialisePriorityFields() {
         //create the list of priorities based on the number of routes
-        $("#packPriority option").remove();
-        $("#pack_Detail_Priority option").remove();
+        $(".pack_priorities option").remove();
 
-        for (let i = 1; i <= Route.getRouteNumber("dechargement"); i++) {
-            $("#packPriority").append('<option value="' + i + '">' + i + '</option>');
-            $("#pack_Detail_Priority").append('<option value="' + i + '">' + i + '</option>');
-        }
+        for (let i = 1; i <= Route.getRouteNumber("dechargement"); i++) 
+            $(".pack_priorities").append('<option value="' + i + '">' + i + '</option>');
+        
     }
 
     //init loading the data from localstorage
@@ -72,15 +69,10 @@ class Route {
     }
 
     //add new route to the application
-    add() {
-        var routes = [];
-        if (localStorage.getItem("routes") !== null) {
-            routes = JSON.parse(localStorage.getItem("routes"));
-        }
-
-        routes.push(this.getRouteToLocalStorage)
-        localStorage.setItem("routes", JSON.stringify(routes));
-
+    addOrUpdate() {
+        localStorage.setItem("routes", JSON.stringify(this.getRouteToLocalStorage));
+        $("#routesDetails div").remove();
+        
         //add the data to the user interface
         Route.allRoutes.routes.forEach(route => {
             var routeInfo = route.from + " - " + route.to + "(" + route.type + ")";

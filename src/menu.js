@@ -1,6 +1,7 @@
 import { controls } from "../main";
 import Dragger from "./dragAndDrop/dragger";
 import DragSurface from "./dragAndDrop/dragSurface";
+import Route from "./routes";
 
 $(document).ready(function () {
 
@@ -17,17 +18,8 @@ $(document).ready(function () {
     $("#reset").click(function () {
         localStorage.removeItem("container");
         localStorage.removeItem("packages");
+        localStorage.removeItem("routes")
         location.reload();
-    });
-
-    let stat = false;
-    $("#switchManuelleMode").click(function () {
-        stat = !stat;
-        $("#switchManuelleMode i").toggleClass("fa-hand-back-fist fa-hand");
-
-        //change the mode of app from auto fill to manuelle fill
-        DragSurface.switch(stat)
-
     });
 
     $("#openCSV").click(function () {
@@ -91,9 +83,30 @@ $(document).ready(function () {
 
             let val = initialQuantity - actualVal;
             if (val > 0) {
+                //disable the normal priorities
+                $("#pack_Detail_Priority").addClass("disabled")
+
+                //add the form to maintain the multiple priorities
                 disableMultipleInputs(".sub-q");
-                $("#multiple-prio").append('<div class="sub-content" id="advOptionsPrio' + id + '"><div class="sub-content-inputs"><div><p class="inputLabel">Quantity</p><input type="number" min="1" max="' + val + '" value="' + val + '"class="sub-q input"></div><div><p class="inputLabel">Priority</p><input type="number" min="0" class="sub-prio input"></div></div><div><i class="fa-solid fa-trash removePrioInput" data="' + id++ + '"></i></div></div>')
+                $("#multiple-prio").append(`
+                        <div class="sub-content" id="advOptionsPrio${id}">
+                            <div class="sub-content-inputs">
+                                <div>
+                                    <p class="inputLabel">Quantity</p>
+                                    <input type="number" min="1" max="${val}" value="${val}" class="sub-q input">
+                                </div>
+                                <div>
+                                    <p class="inputLabel">Priority</p>
+                                    <select class="pack_priorities sub-prio input" required></select>
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fa-solid fa-trash removePrioInput" data="${id++}"></i>
+                            </div>
+                        </div>`)
                 $(".sub-container").animate({ scrollTop: $('.sub-container').prop("scrollHeight") }, 500);
+
+                Route.initialisePriorityFields();
             }
             else
                 alert("the somme is bigger than initial quantity");
@@ -105,6 +118,8 @@ $(document).ready(function () {
     //remove the non needed inputs
     $(document).on("click", ".removePrioInput", function () {
         $("#advOptionsPrio" + $(this).attr("data")).remove()
+        if ($(".sub-content").length == 0) 
+            $("#pack_Detail_Priority").removeClass("disabled")
     });
 
     //get the array of values inserted by the user

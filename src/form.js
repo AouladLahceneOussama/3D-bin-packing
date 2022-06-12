@@ -7,6 +7,7 @@ import { loadPacks, loadResult } from "./result_drawer.js";
 import Logger from "./logger.js";
 import Route from "./routes.js";
 import DragSurface from "./dragAndDrop/dragSurface.js";
+import { deleteAllPacks } from "./dragAndDrop/dragDropMenu.js";
 
 $(document).ready(function () {
 
@@ -20,6 +21,41 @@ $(document).ready(function () {
         $("#containerLenght").val(container.l)
         $("#containerUnloading").val(container.unloading)
     }
+
+    // create the routes from localstorage
+    //check if at least a route is created
+    var routeCreated = false;
+
+    // from  = api || from = localstorage
+    function loadRoutes(routes = [], loadFrom) {
+        let routesLocalStorage = JSON.parse(localStorage.getItem("routes"));
+        let length;
+
+        if (loadFrom == "api" || loadFrom == "csv") {
+            length = routes.length
+            routes = routes
+        }
+        else {
+            if (routesLocalStorage == null) return;
+
+            length = routesLocalStorage.routeNumber
+            routes = routesLocalStorage.routes
+        }
+
+        if (length > 0) {
+            $("#routesNumber").val(length);
+            for (let i = 0; i < length - 1; i++)
+                addRouteInputs(i + 1);
+
+            $('.routeFrom').each(function (i) { $(this).val(routes[i].from); });
+            $('.routeTo').each(function (i) { $(this).val(routes[i].to); });
+            $('.routeType').each(function (i) { $(this).val(routes[i].type); });
+        }
+
+    }
+
+
+    loadRoutes([], "localStorage");
 
     //routes number incerement and decrement
     $("#routeIncrement").click(function () {
@@ -84,7 +120,9 @@ $(document).ready(function () {
         }
 
         route = new Route(routeDetails.routesNumber, routeDetails.routes)
-        route.add();
+        route.addOrUpdate();
+
+        routeCreated = true
     });
 
     //submit the container form to create the container
@@ -100,7 +138,7 @@ $(document).ready(function () {
         containerDimensions.capacity = 0;
 
         //remove all the truck and the packs added
-        updateScene();
+        updateScene("all");
 
         //create the container
         new Container(containerDimensions.w, containerDimensions.h, containerDimensions.l, containerDimensions.capacity);
@@ -113,7 +151,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         if (!containerCreated) {
-            alert("create the container")
+            showErrorMessage("please create the container")
             return;
         }
 
@@ -147,31 +185,76 @@ $(document).ready(function () {
 
     //push the packages into the container
     $("#solve").click(function () {
-        if (!containerCreated) {
-            alert("create the container")
+        if (!routeCreated) {
+            showErrorMessage("please add a route")
             return;
         }
 
+        if (!containerCreated) {
+            showErrorMessage("please create the container")
+            return;
+        }
+
+        $(".menu").toggleClass("openMenu closeMenu");
+        $(".menuIcon").toggleClass("openMenuIcon closeMenu");
+        deleteAllPacks();
         Pack.removePacksFromTheScene();
         scene.remove(scene.getObjectByName("sphere"));
 
         var packer = new Packer("cub");
         var packagesToLoad = packer.initialisePackagesToLoad();
 
-        let logger = new Logger("Loading", 0.01);
-        logger.dispatchMessage();
+        new Logger("Loading", 0.01).dispatchMessage();
 
         worker.postMessage([Container.instances, packagesToLoad]);
-
+        $(".packer-loader").toggleClass("packer-loader--hide packer-loader--show")
         worker.onmessage = (msg) => {
-            loadPacks(msg.data.packer[0], msg.data.packer[1]);
+            new Logger("Loaded (Algorithme)", msg.data.executionTime).dispatchMessage();
+            $(".packer-loader").toggleClass("packer-loader--hide packer-loader--show")
+
+            if($("#loadBoxes").is(":checked"))
+                loadPacks(msg.data.packer[0], msg.data.packer[1]);
+
             loadResult(Pack.allInstances, msg.data.packer[1]);
             $("#numberBox").val(msg.data.packer[1].length);
 
-            let logger = new Logger("Loaded", msg.data.executionTime);
-            logger.dispatchMessage();
+            new Logger("Loaded (3D models)", msg.data.executionTime).dispatchMessage();
+
         }
     })
+
+    function showErrorMessage(msg) {
+        $(".error-container").toggleClass("error-container--hidden")
+        $("#errorMsg").html(msg)
+
+        setTimeout(() => {
+            $(".error-container").toggleClass("error-container--hidden")
+        }, 1500)
+    }
+
+    //change to the manuelle mode
+    let stat = false;
+    $("#switchManuelleMode").click(function () {
+        if (!containerCreated) {
+            showErrorMessage("please create the container")
+            return;
+        }
+
+        // if(!$("#switchManuelleMode").hasClass("disabled")){
+        updateScene("loadedPacks");
+        $(".menu").toggleClass("openMenu closeMenu");
+        $(".menuIcon").toggleClass("openMenuIcon closeMenu");
+        $(".dragDrop-container").toggleClass("hidden");
+
+
+        Pack.reloadShowPacker();
+
+        stat = !stat;
+        $("#solve").toggleClass("disabled")
+        //change the mode of app from auto fill to manuelle fill
+        DragSurface.switch(stat)
+
+    });
 
     //load the packages from the localstorage if not empty
     Pack.loadPacksFromLocalStorage();
@@ -250,7 +333,7 @@ $(document).ready(function () {
     $("#actual-btn").change(function (e) {
         var ext = $("#actual-btn").val().split(".").pop().toLowerCase();
         if ($.inArray(ext, ["csv"]) == -1) {
-            alert('Upload CSV');
+            showErrorMessage("Upload CSV file")
             return false;
         }
         if (e.target.files != undefined) {
@@ -258,7 +341,7 @@ $(document).ready(function () {
             var reader = new FileReader();
             reader.onload = function (e) {
                 var lines = e.target.result.split('\r\n');
-                loadDataFromCsv(lines);
+                loadDataFromCsv2(lines);
             };
             reader.readAsText(e.target.files.item(0));
         }
@@ -269,6 +352,7 @@ $(document).ready(function () {
     function loadDataFromCsv(data) {
         for (let i = 1; i < data.length; i++) {
             if (data[i].length > 0) {
+                console.log(data[i])
                 let line = data[i].split(",");
 
                 if (line[0] == "container") {
@@ -290,6 +374,42 @@ $(document).ready(function () {
                 }
             }
         }
+    }
+
+    function loadDataFromCsv2(data) {
+        let arrayOfRoutes = [];
+        for (let i = 6; i < data.length; i++) {
+            if (data[i].length > 0) {
+                console.log(data[i])
+                let line = data[i].split(",");
+
+                if (line[0] == "container") {
+                    new Container(line[1], line[2], line[3], line[4]);
+                    containerCreated = true;
+                }
+                if (line[0] == "colis") {
+                    let rotations = [];
+                    for (let j = 6; j <= 8; j++) {
+                        if (line[j] != undefined)
+                            rotations.push(line[j].replace("\"", ''));
+                    }
+
+                    new Pack(line[1], line[2], line[3], line[4], line[5], line[6], [...rotations]).add();
+                }
+                if (line[0] == "route") {
+                    arrayOfRoutes.push({
+                        id: line[1],
+                        from: line[2],
+                        to: line[3],
+                        type: line[4]
+                    })
+                    routeCreated = true
+                }
+            }
+        }
+
+        new Route(arrayOfRoutes.length, arrayOfRoutes).addOrUpdate();
+        loadRoutes(arrayOfRoutes, "csv");
     }
 
     $("#numberBox").on("input", function (e) {
@@ -340,17 +460,19 @@ $(document).ready(function () {
         console.log(data)
         let container = data.container;
         let packages = data.colis;
+        let routes = data.routes;
+
+        new Route(routes.length, routes).addOrUpdate();
+        loadRoutes(routes, "api");
+        routeCreated = true
 
         new Container(container.w, container.h, container.l, container.capacity, container.unloading);
         containerCreated = true;
 
         packages.map(pack => {
-            var pack = new Pack(pack.label, pack.w, pack.h, pack.l, pack.q, pack.stackingCapacity, pack.rotations, pack.priority);
-            pack.add();
-
-            // var packDim = pack.w + " , " + pack.h + " , " + pack.l + " ( " + pack.q + " ) ";
-            // $("#packageDetails").append('<div class="packInfo"><div>' + pack.label + '</div><div class="packInfo-numbers">' + packDim + ' </div></div>');
+            new Pack(pack.label, pack.w, pack.h, pack.l, pack.q, pack.stackingCapacity, pack.rotations, pack.priority).add();
         });
+
 
         let logger = new Logger("Load Data", 0.01);
         logger.dispatchMessage();

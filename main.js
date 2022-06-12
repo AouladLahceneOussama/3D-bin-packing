@@ -356,10 +356,21 @@ function cameraController() {
 }
 
 //removes the container and the loadedBoxes
-function updateScene() {
-  scene.remove(scene.getObjectByName("Full_Container"))
-  scene.remove(scene.getObjectByName("All_Packs"))
+function updateScene(type) {
+  if(type == "loadedPacks")
+    scene.remove(scene.getObjectByName("All_Packs"))
+  
+  if(type == "all"){
+    scene.remove(scene.getObjectByName("All_Packs"))
+    scene.remove(scene.getObjectByName("Full_Container"))
+  }
+   
   $("#result").empty();
+
+  $("#result").append(`
+  <div class="empty-result">
+    Not solved yet
+  </div>`)
 }
 
 export { camera, renderer, controls, transformControl, truck_wheels, truck_support, updateScene }

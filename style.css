@@ -284,14 +284,14 @@ a {
   cursor: pointer;
 }
 
-.solving-mode{
+.solving-mode {
   display: flex;
   justify-content: space-around;
   align-items: center;
   margin: 20px 0;
 }
 
-.solving-mode div{
+.solving-mode .option {
   background-color: white;
   text-transform: uppercase;
   font-weight: bold;
@@ -303,6 +303,14 @@ a {
   cursor: pointer;
   border-radius: 20px;
   color: rgba(0, 0, 0, 0.8);
+  border: 1px solid black;
+  transition: .3s ease-in-out;
+}
+
+.solving-mode .option:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: 1px solid white;
 }
 
 /***** global classes *****/
@@ -627,6 +635,23 @@ a {
 /* csv */
 
 /* api */
+.api p {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.api a {
+  background-color: white;
+  padding: 5px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.api .upload{
+  margin: 10px 0;
+}
+
 .api .upload button {
   background-color: white;
   padding: 5px 20px;
@@ -857,6 +882,7 @@ input[type="range"]:hover::-moz-range-thumb {
 }
 
 .sub-content .sub-content-inputs {
+  width: 100%;
   display: flex;
   justify-content: flex-start;
   align-items: flex-end;
@@ -1037,7 +1063,7 @@ input[type="range"]:hover::-moz-range-thumb {
 }
 
 /* drag and drop controller */
-.dragDrop-container{
+.dragDrop-container {
   position: absolute;
   bottom: 140px;
   right: 10px;
@@ -1050,11 +1076,11 @@ input[type="range"]:hover::-moz-range-thumb {
   transition: .3s ease-in-out;
 }
 
-.dragDrop-container--close{
+.dragDrop-container--close {
   height: 26px;
 }
 
-.dragDrop-container--open{
+.dragDrop-container--open {
   height: 150px;
 }
 
@@ -1080,6 +1106,11 @@ input[type="range"]:hover::-moz-range-thumb {
 
 .dragDrop-container .dragDrop-content .pointer {
   cursor: pointer;
+  transition: .3s ease-in-out;
+}
+
+.dragDrop-container .dragDrop-content .pointer:hover {
+  color: #8b8b8b;
 }
 
 .dragDrop-container .dragDrop-content .dragDrop-options .option-rotation {
@@ -1118,17 +1149,23 @@ input[type="range"]:hover::-moz-range-thumb {
   font-weight: bold;
 }
 
-.disabled{
+.disabled {
   pointer-events: none;
   opacity: 0.2;
 }
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
 /* drag and drop controller */
 
 
 
 /* guidline-dragdrop */
 
-.guidline-dragdrop-container{
+.guidline-dragdrop-container {
   position: fixed;
   top: 0;
   left: 0;
@@ -1142,48 +1179,49 @@ input[type="range"]:hover::-moz-range-thumb {
   transition: .3s ease-in-out;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content{
+.guidline-dragdrop-container .guidline-dragdrop-content {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
   border-radius: 6px;
   background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);color: white;
+  backdrop-filter: blur(5px);
+  color: white;
   padding: 20px;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines{
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines {
   width: 40%;
   padding: 10px;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline{
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline {
   margin: 10px 0;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline .t-guidline-subDetails{
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline .t-guidline-subDetails {
   color: rgb(185, 185, 185);
   font-size: 12px;
   padding-left: 10px;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline .t-guidline-subDetails p{
+.guidline-dragdrop-container .guidline-dragdrop-content .text-guidlines .t-guidlline .t-guidline-subDetails p {
   margin: 5px;
 }
 
 /* keys-guidlines */
-.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines{
+.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines {
   padding: 10px;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines .key-guidline{
+.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines .key-guidline {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin: 5px 0;
 }
 
-.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines .key-guidline .key{
+.guidline-dragdrop-container .guidline-dragdrop-content .keys-guidlines .key-guidline .key {
   background-color: grey;
   padding: 5px 10px;
   font-weight: bold;
@@ -1192,7 +1230,7 @@ input[type="range"]:hover::-moz-range-thumb {
   margin-right: 10px;
 }
 
-.toggleGuidlines{
+.toggleGuidlines {
   visibility: hidden;
   opacity: 0;
   transition: .3s ease-in-out;
@@ -1202,3 +1240,35 @@ input[type="range"]:hover::-moz-range-thumb {
 /* keys-guidlines */
 
 /* guidline-dragdrop */
+
+/* error message */
+.error-container{
+  z-index: 20;
+  position: absolute;
+  bottom: 10px;
+  left: 40%;
+  transition: .3s ease-in-out;
+}
+
+.error-container--hidden{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.error-message{
+  width: 100%;
+  padding: 10px 50px;
+  background-color: rgba(223, 86, 86, .5);
+  color: darkred;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bolder;
+  text-transform: capitalize;
+}
+
+.error-message i{
+  position: relative;
+  left: -80px;
+  top:0px
+}

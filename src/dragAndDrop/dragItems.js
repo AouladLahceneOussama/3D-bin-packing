@@ -5,6 +5,7 @@ import Pack from "../pack";
 import Dragger from './dragger';
 import DragSurface from './dragSurface';
 import DragDropLogger from './dragDropLogger';
+import { currentRotationUpdate } from './dragDropMenu';
 
 class DragItem {
 
@@ -76,9 +77,10 @@ class DragItem {
             line.userData.name = "Line";
 
             //position the group
-            let pos = this.bestPosition(dimensions)
+            let pos = this.bestPosition()
             this.stat.position = pos;
 
+            
             boxAndBorder.position.set(pos.x, pos.y, pos.z);
             boxGeometry.translate(dimensions.w / 2, dimensions.h / 2, dimensions.l / 2);
             edges.translate(dimensions.w / 2, dimensions.h / 2, dimensions.l / 2);
@@ -88,6 +90,9 @@ class DragItem {
 
             scene.add(boxAndBorder);
             transformControl.attach(boxAndBorder);
+
+            //change the color of the current rotation in the menu
+            currentRotationUpdate(dimensions.type[0], dimensions.type[1]);
 
             return box;
         }

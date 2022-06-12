@@ -48,17 +48,17 @@ function loadPacks(openPoints, packagesLoaded) {
     });
 
     var timeLine = gsap.timeline();
-    for (let i = 0; i < allPacks.children.length; i++) {
-        timeLine.from(allPacks.children[i].position, {
-            x: 2000,
-            y: 0,
-            z: 0,
-            ease: Bounce.easeOut,
-            duration: 0.02,
-            // Make sure to tell it to update
-            onUpdate: () => allPacks.children[0].position.needsUpdate = true
-        });
-    }
+    // for (let i = 0; i < allPacks.children.length; i++) {
+    //     timeLine.from(allPacks.children[i].position, {
+    //         x: 2000,
+    //         y: 0,
+    //         z: 0,
+    //         ease: Bounce.easeOut,
+    //         duration: 0.02,
+    //         // Make sure to tell it to update
+    //         onUpdate: () => allPacks.children[0].position.needsUpdate = true
+    //     });
+    // }
 
     let pointGroup = new THREE.Group();
     pointGroup.name = "sphere";
@@ -145,6 +145,7 @@ function csvResult(packagesLoaded) {
             "Width",
             "Height",
             "Lenght",
+            "priority",
             "X",
             "Y",
             "Z",
@@ -152,11 +153,12 @@ function csvResult(packagesLoaded) {
             "RotationAngle",
         ],
         ...packagesLoaded.map(pack => [
-            pack.id,
+            ` ${pack.id}`,
             pack.label,
             pack.w,
             pack.h,
             pack.l,
+            pack.priority,
             pack.x,
             pack.y,
             pack.z,

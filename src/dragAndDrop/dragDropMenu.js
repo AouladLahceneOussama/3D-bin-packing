@@ -65,57 +65,25 @@ function currentRotationUpdate(currentRotation, currentAngle) {
     $(`#d-${currentRotation} .${newAngle}`).addClass("d-current-rotate");
 }
 
-function createDragItem(pack) {
-    //create the group of box and border
-    let boxAndBorder = new THREE.Group();
-    boxAndBorder.name = "Box_Border_" + pack.id;
-    boxAndBorder.userData.parent_id = pack.parent_id;
-    boxAndBorder.userData.id = pack.id;
-
-    // let dimensions = Dragger.specificOpenPoints[0].rotations[0];
-    //crete the box
-    let normalMateriel = new THREE.MeshLambertMaterial({ color: pack.color * 0xFF0FFF, side: THREE.DoubleSide })
-    let boxGeometry = new THREE.BoxGeometry(pack.w, pack.h, pack.l);
-    let box = new THREE.Mesh(boxGeometry, normalMateriel);
-    box.userData.parent_id = pack.parent_id;
-    box.userData.id = pack.id;
-
-    //create the outlines of the boxes
-    let edges = new THREE.EdgesGeometry(boxGeometry);
-    let line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xffffff }));
-    line.name = "Line_" + pack.parent_id;
-    line.userData.id = pack.parent_id;
-    line.userData.name = "Line";
-
-    //position the group
-    boxAndBorder.position.set(pack.x, pack.y, pack.z);
-    boxGeometry.translate(pack.w / 2, pack.h / 2, pack.l / 2);
-    edges.translate(pack.w / 2, pack.h / 2, pack.l / 2);
-
-    boxAndBorder.add(box);
-    boxAndBorder.add(line);
-
-    scene.add(boxAndBorder);
-}
-
-$("#delete-all").click(function(){
+function deleteAllPacks() {
     let itemsToDelete = [];
     scene.traverse((obj) => {
-        if (obj.userData.name === 'Box_border') 
+        if (obj.userData.name === 'Box_border')
             itemsToDelete.push(obj);
     });
 
     // make all the variable the the first state
     Dragger.currentStep = 0
     Dragger.loadedPack = [];
-    Dragger.openPoints = [{x:0, y:0, z:0}];
-    itemsToDelete.forEach( item => scene.remove(item));
+    Dragger.openPoints = [{ x: 0, y: 0, z: 0 }];
+    itemsToDelete.forEach(item => scene.remove(item));
+}
 
-});
+$("#delete-all").click((() => deleteAllPacks()));
 
 $("#dragDrop-backward").click(function () {
     let steps = JSON.parse(localStorage.getItem("steps"));
-    
+
     console.log("backward", Dragger.currentStep);
     if (steps.length > 0 && Dragger.currentStep > 0) {
         $("#dragDrop-backward").removeClass("disabled");
@@ -140,7 +108,7 @@ $("#dragDrop-backward").click(function () {
     }
 });
 
-setInterval( ()=>{
+setInterval(() => {
     if (Dragger.currentStep > 0) {
         $("#dragDrop-backward").removeClass("disabled");
     }
@@ -177,15 +145,15 @@ $("#openDragger").click(function () {
     $("#dragDrop").toggleClass("dragDrop-container--close dragDrop-container--open");
 });
 
-$(".guidline-dragdrop-container").click( function(){
+$(".guidline-dragdrop-container").click(function () {
     $($(this)).toggleClass("toggleGuidlines")
 });
 
-$("#dragDrop-shortcuts").click( function(){
+$("#dragDrop-shortcuts").click(function () {
     $(".guidline-dragdrop-container").toggleClass("toggleGuidlines")
 })
 
 export {
-    changeOpacityUnvailableRotations, currentRotationUpdate
+    changeOpacityUnvailableRotations, currentRotationUpdate, deleteAllPacks, initializeClasses
 }
 

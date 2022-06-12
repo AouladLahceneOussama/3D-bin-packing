@@ -5,7 +5,7 @@ import { scene } from '../configurations.js';
 import DragDropLogger from './dragDropLogger.js';
 import DragItem from "./dragItems";
 import DragSurface from "./dragSurface";
-import { changeOpacityUnvailableRotations, currentRotationUpdate } from "./dragDropMenu"
+import { changeOpacityUnvailableRotations, currentRotationUpdate, initializeClasses } from "./dragDropMenu"
 
 class Dragger {
     // this variable for saving the steps done by the user
@@ -371,6 +371,8 @@ class Dragger {
 
                 // change the stat of the box 
                 changePackStat(box.userData.parent_id);
+                initializeClasses("d-less-opacity", true)
+                initializeClasses("d-current-rotate", false)
             }
         }
 
@@ -645,6 +647,8 @@ class Dragger {
                         scene.remove(transformControl.object)
                         transformControl.detach();
                         transformControl = null;
+                        initializeClasses("d-less-opacity", true)
+                        initializeClasses("d-current-rotate", false)
                     }
                     break;
 
@@ -656,14 +660,6 @@ class Dragger {
 
                 case "W": // W
                     transformControl.setMode('translate');
-                    break;
-
-                case "E": // E
-                    transformControl.setMode('rotate');
-                    break;
-
-                case "R": // R
-                    transformControl.setMode('scale');
                     break;
 
                 case "+":
@@ -702,7 +698,7 @@ class Dragger {
                         createDraggingPoint()
                     break;
 
-                case "F": // F
+                case "R": // R
                     if (!Dragger.mouseOnAction)
                         updateRotationFaces()
                     break;
@@ -712,6 +708,10 @@ class Dragger {
             }
         });
     }
+
+    // add the functionalitie to download the result
+    // if pdf is working i will do it ??
+    static confirmDragDropSolution(){}
 
     //check if the pack fit into the box
     //check the possible rotations that the box stills in the container
