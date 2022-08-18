@@ -9,7 +9,6 @@ class Route {
     constructor(routeNumber = 0, routes = []) {
         this.id = ID++;
         this.routeNumber = parseInt(routeNumber);
-        console.log(routes)
         this.routes = routes;
 
         Route.allRoutes = this.getRoute;
@@ -31,7 +30,6 @@ class Route {
 
     static getRouteNumber(type) {
         let items = Route.allRoutes.routes.filter(route => {
-            console.log(route.type, type)
             return route.type == type;
         });
 
