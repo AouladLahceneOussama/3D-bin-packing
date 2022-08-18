@@ -1,7 +1,6 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
+import * as THREE from "../threeJsLib/three.js.r122.js"
 import { scale_meter_px, scene } from "./configurations.js";
 import Logger from './logger.js';
-import Route from './routes.js';
 
 let Id = 0;
 

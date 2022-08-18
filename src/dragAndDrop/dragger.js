@@ -1,6 +1,6 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
-import { TransformControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/TransformControls.js';
-import { camera, renderer, controls } from '../../main.js';
+import * as THREE from "../../threeJsLib/three.js.r122"
+import { TransformControls } from '../../threeJsLib/transformControls';
+import { camera, renderer, controls } from '../../sceneConfig.js';
 import { scene } from '../configurations.js';
 import DragDropLogger from './dragDropLogger.js';
 import DragItem from "./dragItems";
@@ -32,6 +32,7 @@ class Dragger {
     }
 
     start(obj, parent_id) {
+        console.log(renderer, camera, controls)
         this.transformControl = new TransformControls(camera, renderer.domElement);
         this.transformControl.setSpace('local');
         this.transformControl.setRotationSnap(Math.PI / 2);

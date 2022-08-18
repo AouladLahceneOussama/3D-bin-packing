@@ -2,13 +2,35 @@
   "name": "vite-project",
   "private": true,
   "version": "0.0.0",
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "setupFiles": [
+      "./test/setup-jest.js"
+    ]
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "jest"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.18.2",
+    "babel-jest": "^28.1.1",
     "dat.gui": "^0.7.9",
-    "vite": "^2.8.0"
+    "jest": "^28.1.1",
+    "jest-canvas-mock": "^2.4.0",
+    "jest-environment-jsdom": "^28.1.1",
+    "jest-fetch-mock": "^3.0.3",
+    "jsdom": "^19.0.0"
+  },
+  "dependencies": {
+    "jest-webgl-canvas-mock": "^0.2.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.25",
+    "ts-jest": "^28.0.5",
+    "vite": "^2.9.12"
   }
 }

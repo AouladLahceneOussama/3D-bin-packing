@@ -1,9 +1,10 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
+import * as THREE from "../threeJsLib/three.js.r122.js"
 import { scale_meter_px, scene } from './configurations.js';
 import { ThreeDContainer } from './ThreeD_container.js';
-import { camera, controls, renderer } from '../main.js';
+import { camera } from '../sceneConfig';
 
 import Pack from './pack';
+import Route from './routes';
 import Dragger from './dragAndDrop/dragger.js';
 import DragSurface from './dragAndDrop/dragSurface.js';
 
@@ -41,7 +42,7 @@ function boxEvent(event) {
 
 //boxes on click, find the box and change the opacity and fill the update/delete form
 function clickBoxes(event) {
-    console.log("clicked")
+    // console.log("clicked")
     let found = findPackShower(event);
     if (found != false) {
         let obj = found[0].object;
@@ -52,12 +53,12 @@ function clickBoxes(event) {
 }
 
 function dragBox(event) {
-    console.log("mousePressed")
+    // console.log("mousePressed")
     let found = findPackShower(event);
     if (found != false) {
         let obj = found[0].object;
         let id = obj.userData.id;
-        
+
         if (obj.userData.dragDrop)
             new Dragger().start(obj, id);
     }
@@ -123,6 +124,13 @@ function fillFormWithData(id) {
     //find the pack from the instances with the specific id
     var pack = Pack.allInstances.find((pack) => pack.id == id);
 
+    // remove the disabled class
+    if (pack.subQuantities.length == 0)
+        $("#pack_Detail_Priority").removeClass("disabled")
+    else
+        $("#pack_Detail_Priority").addClass("disabled")
+
+
     $("#pack_Detail_Id").val(pack.id);
     $("#pack_Detail_Label").val(pack.label);
     $("#pack_Detail_Width").val(pack.w / scale_meter_px);
@@ -130,7 +138,7 @@ function fillFormWithData(id) {
     $("#pack_Detail_Lenght").val(pack.l / scale_meter_px);
     $("#pack_Detail_Quantity").val(pack.q);
     $("#pack_Detail_StackingCapacity").val(pack.stackC);
-    $("#pack_Detail_Priority").val(pack.priority).change();
+    
 
     pack.rotateDirections.forEach(dir => {
         $(`#pack_Detail_${dir}`).prop("checked", true);
@@ -140,8 +148,37 @@ function fillFormWithData(id) {
 
     for (let i = 0; i < pack.subQuantities.length; i++) {
         let data = pack.subQuantities[i];
-        $("#multiple-prio").append('<div class="sub-content" id="advOptionsPrio' + i + '"><div class="sub-content-inputs"><div><p class="inputLabel">Quantity</p><input type="number" min="1" value="' + data.n + '"class="sub-q input"></div><div><p class="inputLabel">Priority</p><input type="number" min="1" value="' + data.p + '" class="sub-prio input"></div></div><div><i class="fa-solid fa-trash removePrioInput" data="' + i + '"></i></div></div>')
+
+        $("#multiple-prio").append(`
+        <div class="sub-content" id="advOptionsPrio${i}">
+            <div class="sub-content-inputs">
+                <div>
+                    <p class="inputLabel">Quantity</p>
+                    <input type="number" min="1" value="${data.n}" class="sub-q input">
+                </div>
+                <div>
+                    <p class="inputLabel">Priority</p>
+                    <select class="pack_priorities sub-prio input sub-prio-val${i}" data-value="${data.p}" required></select>
+                </div>
+            </div>
+            <div>
+                <i class="fa-solid fa-trash removePrioInput" data="${i}"></i>
+            </div>
+        </div>`)
     }
+
+    Route.initialisePriorityFields();
+
+    let multiPrioVal = $(".sub-prio");
+    console.log(multiPrioVal)
+
+    for (let i = 0; i < multiPrioVal.length; i++) {
+        let val = parseInt($(`.sub-prio-val${i}`).attr("data-value"));
+        console.log($(`.sub-prio-val${i}`).attr("data-value"), val)
+        $(`.sub-prio-val${i}`).val(val).change();
+    }
+
+    $("#pack_Detail_Priority").val(pack.priority).change();
 
     if (pack.loaded != undefined && pack.unloaded != undefined)
         $("#packStatut").html(" (" + pack.loaded + " / " + (pack.loaded + pack.unloaded) + ") ")
@@ -150,3 +187,4 @@ function fillFormWithData(id) {
 
 
 export { clickBoxes, hoverBoxes, boxEvent }
+

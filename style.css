@@ -134,13 +134,6 @@ a {
   left: 50px
 }
 
-.download-result {
-  background-color: white;
-  color: rgba(0, 0, 0, 1);
-  padding: 5px 20px;
-  border-radius: 20px;
-}
-
 .scale {
   font-size: 14px;
   padding-left: 20px;
@@ -648,7 +641,7 @@ a {
   color: rgba(0, 0, 0, 0.8);
 }
 
-.api .upload{
+.api .upload {
   margin: 10px 0;
 }
 
@@ -679,6 +672,49 @@ a {
   right: -32px;
   transform: rotateZ(-90deg);
   cursor: pointer;
+}
+
+.scene-player {
+  position: absolute;
+  bottom: 140px;
+  right: 10px;
+  width: 275px;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 10px 22px;
+  color: white;
+  transition: .3s ease-in-out;
+}
+
+.scene-player .player-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scene-player .player-controls i {
+  margin: 0 5px;
+  cursor: pointer;
+  transition: .3s ease-in-out;
+}
+
+.scene-player .player-controls i:hover {
+  color: #8b8b8b;
+}
+
+.scene-player .player-controls .big {
+  font-size: 24px;
+  margin: 0 5px;
+}
+
+.scene-player--active {
+  color: green
+}
+
+.scene-player--inactive {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .empty-result {
@@ -1242,7 +1278,7 @@ input[type="range"]:hover::-moz-range-thumb {
 /* guidline-dragdrop */
 
 /* error message */
-.error-container{
+.error-container {
   z-index: 20;
   position: absolute;
   bottom: 10px;
@@ -1250,12 +1286,12 @@ input[type="range"]:hover::-moz-range-thumb {
   transition: .3s ease-in-out;
 }
 
-.error-container--hidden{
-    opacity: 0;
-    visibility: hidden;
+.error-container--hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
-.error-message{
+.error-message {
   width: 100%;
   padding: 10px 50px;
   background-color: rgba(223, 86, 86, .5);
@@ -1267,8 +1303,71 @@ input[type="range"]:hover::-moz-range-thumb {
   text-transform: capitalize;
 }
 
-.error-message i{
+.error-message i {
   position: relative;
   left: -80px;
-  top:0px
+  top: 0px
 }
+
+.image-viewer {
+  position: absolute;
+  z-index: 200;
+  top: 0;
+  left: 100px;
+  width: 500px;
+}
+
+
+/* export result */
+.export-result {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: white;
+  color: rgba(0, 0, 0, 1);
+  padding: 5px 20px;
+  border-radius: 20px;
+  color: rgba(0, 0, 0, 0.7);
+  margin: 10px 0;
+}
+
+.export-result .download-result {
+  margin-left: 10px;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+/* table for pdf */
+table {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000; */
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table td,
+table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table tr:hover {
+  background-color: #ddd;
+}
+
+table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+
+/* table for pdf */

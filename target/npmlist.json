@@ -1,0 +1,1 @@
+{"version":"0.0.0","name":"vite-project","dependencies":{"jest-webgl-canvas-mock":{"version":"0.2.3"},"jspdf-autotable":{"version":"3.5.25"},"jspdf":{"version":"2.5.1"},"ts-jest":{"version":"28.0.5"},"vite":{"version":"2.9.12"}}}

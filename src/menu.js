@@ -1,6 +1,3 @@
-import { controls } from "../main";
-import Dragger from "./dragAndDrop/dragger";
-import DragSurface from "./dragAndDrop/dragSurface";
 import Route from "./routes";
 
 $(document).ready(function () {
@@ -50,6 +47,11 @@ $(document).ready(function () {
     $("#openResult").click(function () {
         $("#openResult").toggleClass("fa-circle-plus fa-circle-minus")
         $("#result").toggleClass("formContainerContentOpen formContainerContentClose");
+    });
+
+    $("#openExport").click(function () {
+        $("#openExport").toggleClass("fa-circle-plus fa-circle-minus")
+        $("#files").toggleClass("formContainerContentOpen formContainerContentClose");
     });
 
     $("#openPackDetail").click(function () {

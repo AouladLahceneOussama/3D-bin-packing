@@ -1,6 +1,6 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
+import * as THREE from "../threeJsLib/three.js.r122.js"
 import { scale_meter_px, scene } from "./configurations.js";
-import { truck_wheels, truck_support } from "../main.js";
+import { truck_wheels, truck_support } from "./ThreeD_container";
 import Logger from './logger.js';
 
 class Container {
@@ -11,7 +11,7 @@ class Container {
         this.w = parseInt(width * scale_meter_px);
         this.h = parseInt(height * scale_meter_px);
         this.l = parseInt(lenght * scale_meter_px);
-        this.capacity = parseInt(capacity);
+        this.capacity = this.w * this.h * this.l;
 
         this.loadContainer();
 
@@ -67,6 +67,7 @@ class Container {
         boxGeometryZ.translate(-5 / 2 - 0.1, this.h / 2, this.l / 2);
 
         plane = new THREE.Mesh(boxGeometryX, material)
+        plane.name = "base"
         container.add(plane)
         plane.castShadow = true;
         plane.receiveShadow = true;
@@ -96,14 +97,16 @@ class Container {
     }
 
     loadTruck(width, lenght, container) {
+        if (truck_support != null && truck_wheels != null) {
+            truck_wheels.position.set(width - 440, -110, lenght / 2);
+            truck_support.position.set(400, -110, lenght / 2);
 
-        truck_wheels.position.set(width - 440, -110, lenght / 2);
-        truck_support.position.set(400, -110, lenght / 2);
+            container.add(truck_wheels);
+            container.add(truck_support);
 
-        container.add(truck_wheels);
-        container.add(truck_support);
+            scene.add(container);
+        }
 
-        scene.add(container);
     }
 }
 

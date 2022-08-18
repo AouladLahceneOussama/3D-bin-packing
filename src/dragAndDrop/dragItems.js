@@ -1,9 +1,7 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
+import * as THREE from "../../threeJsLib/three.js.r122"
 import { scene } from "../configurations";
-import { camera, renderer, controls, transformControl } from '../../main.js';
 import Pack from "../pack";
 import Dragger from './dragger';
-import DragSurface from './dragSurface';
 import DragDropLogger from './dragDropLogger';
 import { currentRotationUpdate } from './dragDropMenu';
 
