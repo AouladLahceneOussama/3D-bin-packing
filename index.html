@@ -10,11 +10,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <title>3D Bin Packaging</title>
-  <script type="module" crossorigin src="/3D-bin-packing/assets/index.e06af850.js"></script>
-  <link rel="stylesheet" href="/3D-bin-packing/assets/index.79023c87.css">
+  <script type="module" crossorigin src="/3D-bin-packing/assets/index.4f12ee13.js"></script>
+  <link rel="stylesheet" href="/3D-bin-packing/assets/index.6e305aed.css">
 </head>
 
 <body>
+
   <div id="app">
 
     <div class="threeD-container" id="3D-container">
@@ -250,15 +251,24 @@
               <div class="packInfo-numbers" id="containerDetails"></div>
             </div>
             <form class="packageForm" id="containerForm">
-              <p class="inputLabel">Width</p>
-              <input type="number" min="0" max="16" step="0.01" id="containerWidth" class="input" required>
-              <p class="inputLabel">Height </p>
-              <input type="number" min="0" max="4" step="0.01" id="containerHeight" class="input" required>
-              <p class="inputLabel">Lenght </p>
-              <input type="number" min="0" max="3" step="0.01" id="containerLenght" class="input" required>
-              <p class="inputLabel">Capacity </p>
-              <input type="number" min="0" value="0" step="0.01" id="containerCapacity" class="input" required>
+              <div class="inputs">
+                <div>
+                  <p class="inputLabel">Width</p>
+                  <input type="number" min="0" max="16" step="0.01" id="containerWidth" class="input" required>
+                </div>
+                <div>
+                  <p class="inputLabel">Height </p>
+                  <input type="number" min="0" max="4" step="0.01" id="containerHeight" class="input" required>
+                </div>
+                <div>
+                  <p class="inputLabel">Length </p>
+                  <input type="number" min="0" max="3" step="0.01" id="containerLenght" class="input" required>
+                </div>
 
+
+                <!-- <p class="inputLabel">Capacity </p>
+              <input type="number" min="0" value="0" step="0.01" id="containerCapacity" class="input" required> -->
+              </div>
               <button class="btn">Add / Update</button>
             </form>
           </div>
@@ -290,7 +300,7 @@
                   <input type="number" min="0" max="4" step="0.01" id="packHeight" class="input" required>
                 </div>
                 <div>
-                  <p class="inputLabel">Lenght </p>
+                  <p class="inputLabel">Length </p>
                   <input type="number" min="0" max="3" step="0.01" id="packLenght" class="input" required>
                 </div>
               </div>
@@ -334,6 +344,7 @@
           </div>
         </div>
 
+        <!-- solving result -->
         <div class="sectionTitle">
           Solving result
           <div class="line"></div>
@@ -352,6 +363,19 @@
           </div>
         </div>
 
+        <!-- export result -->
+        <div class="formContainer">
+          <h3 class="packAdd">
+            <span>Export</span>
+            <i class="fa-solid fa-circle-plus" id="openExport"></i>
+          </h3>
+          <div class="formContainerContentClose" id="files">
+            <div class="empty-result">
+              Not solved yet
+            </div>
+          </div>
+        </div>
+
         <div class="sectionTitle">
           Solving Mode
           <div class="line"></div>
@@ -362,10 +386,10 @@
           <div class="option" id="switchManuelleMode">Manually</div>
         </div>
 
-        <div>
+        <!-- <div>
           <input type="checkbox" id="loadBoxes">
           <span>Load Boxes in container</span>
-        </div>
+        </div> -->
       </div>
       <!-- main menu -->
 
@@ -477,10 +501,23 @@
       <!-- packdetails -->
 
       <!-- number of boxes controller -->
-      <div class="range">
-        <input type="range" min="1" max="" value="0" id="numberBox">
+      <div class="range hidden">
+        <input type="range" min="0" max="" step="1" value="0" id="numberBox" disabled>
       </div>
       <!-- number of boxes controller -->
+
+      <!-- scene player controller -->
+      <div class="scene-player hidden">
+        <div class="player-controls">
+          <i class="fa-solid fa-backward-fast small" id="increase-speed"></i>
+          <i class="fa-solid fa-backward small scene-player--active" id="play-backward"></i>
+          <!-- <i class="fa-solid fa-circle-pause "></i> -->
+          <i class="fa-solid fa-circle-play big" id="play-pause" role="pause"></i>
+          <i class="fa-solid fa-forward small disabled" id="play-forward"></i>
+          <i class="fa-solid fa-forward-fast small" id="decrease-speed"></i>
+        </div>
+      </div>
+      <!-- scene player controller -->
 
       <!-- logger -->
       <div class="logger">
@@ -696,6 +733,35 @@
     <!-- guidelines of dragdrop mode -->
   </div>
 
+  <!-- table to export data to pdf -->
+  <table id="myTable" hidden>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>label</th>
+        <th>Dimensions (W x H x L)</th>
+        <th>Volume (m3)</th>
+        <th>Quantity</th>
+        <th>Loaded</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <table id="myContainerTable" hidden>
+    <thead>
+      <tr>
+        <th>Dimensions</th>
+        <th>Capacity (m3)</th>
+        <th>Occuped Volume (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <!-- table to export data to pdf -->
+
 
   <!-- GSAP Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
@@ -706,6 +772,7 @@
   <!-- JQuery Library -->
 
   <!-- MyScripts -->
+  
   
   
   <!-- MyScripts -->
